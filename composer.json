@@ -1,5 +1,2 @@
 {
-    "require": {
-        "laravel/installer": "^5.16"
-    }
 }
