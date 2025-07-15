@@ -4,6 +4,7 @@
     <data-source source="LOCAL" name="PostgreSQL" uuid="334d0582-9330-4ea2-be53-8bf6b5023181">
       <driver-ref>postgresql</driver-ref>
       <synchronize>true</synchronize>
+      <rewrite-bounds>false</rewrite-bounds>
       <jdbc-driver>org.postgresql.Driver</jdbc-driver>
       <jdbc-url>jdbc:postgresql://aws-0-us-east-2.pooler.supabase.com:6543/postgres?user=postgres.lluvpzquudxejccfktmb&amp;password=6tb~V&quot;gAg_9J;5'9</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
