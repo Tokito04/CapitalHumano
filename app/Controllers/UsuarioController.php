@@ -38,7 +38,7 @@ class UsuarioController
 
             if ($usuario->crear()) {
                 // Redirigir al login o a una página de éxito
-                header('Location: /SemestralDesVII/CapitalHumano/public/login');
+                header('Location:'.BASE_PATH. '/login');
             } else {
                 echo "Hubo un error al registrar el usuario.";
             }
@@ -65,10 +65,10 @@ class UsuarioController
                 $_SESSION['user_rol'] = $user['rol_id'];
 
                 // Redirigir a una página de bienvenida o dashboard
-                header('Location: /SemestralDesVII/CapitalHumano/public/dashboard');
+                header('Location:'.BASE_PATH. '/dashboard');
             } else {
                 // Si las credenciales son incorrectas, redirigir de vuelta al login con un error
-                header('Location: /SemestralDesVII/CapitalHumano/public/login?error=1');
+                header('Location:'.BASE_PATH. '/login?error=1');
             }
                 exit();
             }
