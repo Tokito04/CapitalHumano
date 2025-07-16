@@ -14,6 +14,7 @@
         <table class="data-table">
             <thead>
             <tr>
+                <th scope="col">Foto</th>
                 <th>Identificación</th>
                 <th>Nombre Completo</th>
                 <th>Email</th>
@@ -24,6 +25,15 @@
             <tbody>
             <?php foreach ($colaboradores as $colaborador): ?>
                 <tr>
+                    <td>
+                        <?php if (!empty($colaborador['foto_perfil'])): ?>
+                            <a href="<?php echo BASE_PATH . '/uploads/fotos/' . htmlspecialchars($colaborador['foto_perfil']); ?>" target="_blank">
+                                <img src="<?php echo BASE_PATH . '/uploads/fotos/' . htmlspecialchars($colaborador['foto_perfil']); ?>" alt="Foto de perfil" width="50" height="50" style="object-fit: cover; border-radius: 50%;">
+                            </a>
+                        <?php else: ?>
+                            <span>Sin foto</span>
+                        <?php endif; ?>
+                    </td>
                     <td><?php echo htmlspecialchars($colaborador['identificacion']); ?></td>
                     <td><?php echo htmlspecialchars($colaborador['primer_nombre'] . ' ' . $colaborador['primer_apellido']); ?></td>
                     <td><?php echo htmlspecialchars($colaborador['correo_personal']); ?></td>

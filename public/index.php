@@ -69,7 +69,6 @@ switch ($request_uri) {
         session_destroy();
         header('Location:'.BASE_PATH. '/login');
         exit();
-        break;
 
     case '/colaboradores':
         if (!isset($_SESSION['user_id'])) { header('Location: ' . BASE_PATH . '/login'); exit(); }

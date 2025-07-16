@@ -10,7 +10,7 @@
     <div class="form-container">
         <h2>Registrar Nuevo Colaborador</h2>
 
-        <form action="<?php echo BASE_PATH; ?>/colaboradores/store" method="POST">
+        <form action="<?php echo BASE_PATH; ?>/colaboradores/store" method="POST" enctype="multipart/form-data">
             <div class="form-grid">
                 <div class="form-group">
                     <label for="primer_nombre">Primer Nombre:</label>
@@ -65,6 +65,11 @@
                     <label for="celular">Celular:</label>
                     <input type="text" id="celular" name="celular">
                 </div>
+            </div>
+
+            <div class="form-group">
+                <label for="foto_perfil">Foto de Perfil:</label>
+                <input type="file" id="foto_perfil" name="foto_perfil" accept="image/*">
             </div>
 
             <div class="form-group">

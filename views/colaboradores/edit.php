@@ -10,7 +10,7 @@
     <div class="form-container">
         <h2>Editar Colaborador</h2>
 
-        <form action="<?php echo BASE_PATH; ?>/colaboradores/update" method="POST">
+        <form action="<?php echo BASE_PATH; ?>/colaboradores/update" method="POST" enctype="multipart/form-data">
             <input type="hidden" name="id" value="<?php echo htmlspecialchars($colaborador['id']); ?>">
 
             <div class="form-grid">
@@ -66,6 +66,11 @@
                     <label for="celular">Celular:</label>
                     <input type="text" id="celular" name="celular" value="<?php echo htmlspecialchars($colaborador['celular']); ?>">
                 </div>
+            </div>
+
+            <div class="form-group">
+                <label for="foto_perfil">Foto de Perfil:</label>
+                <input type="file" id="foto_perfil" name="foto_perfil" accept="image/*">
             </div>
 
             <div class="form-group">

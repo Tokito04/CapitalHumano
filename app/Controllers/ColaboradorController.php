@@ -3,7 +3,7 @@
 namespace App\Controllers;
 
 use App\Models\Colaborador;
-
+use App\Utils\Validator;
 class ColaboradorController
 {
     /**
@@ -59,6 +59,23 @@ class ColaboradorController
             $colaborador->sexo = $_POST['sexo'];
             $colaborador->identificacion = $_POST['identificacion'];
             $colaborador->fecha_nacimiento = $_POST['fecha_nacimiento'];
+            if (isset($_FILES['foto_perfil']) && !empty($_FILES['foto_perfil']['name'])) {
+                if ($_FILES['foto_perfil']['error'] === UPLOAD_ERR_OK) {
+                    $uploadDir = __DIR__ . '/../../public/uploads/fotos/';
+                    $fileName = uniqid() . '-' . basename($_FILES['foto_perfil']['name']);
+                    $targetFile = $uploadDir . $fileName;
+
+                    if (move_uploaded_file($_FILES['foto_perfil']['tmp_name'], $targetFile)) {
+                        $colaborador->foto_perfil = $fileName;
+                        // Opcional: Borrar la foto antigua si existe
+                    }
+                }
+            } else {
+                // Si no se sube una nueva foto, mantenemos la que ya estaba en la BD
+                $datos_actuales = Colaborador::findById($_POST['id']);
+                $colaborador->foto_perfil = $datos_actuales['foto_perfil'];
+            }
+            // ---- FIN LÓGICA DE FOTO ----
             $colaborador->correo_personal = $_POST['correo_personal'];
             $colaborador->telefono = $_POST['telefono'];
             $colaborador->celular = $_POST['celular'];
@@ -77,6 +94,7 @@ class ColaboradorController
     public function store()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
             $colaborador = new Colaborador();
             $colaborador->primer_nombre = $_POST['primer_nombre'];
             $colaborador->segundo_nombre = $_POST['segundo_nombre'];
@@ -85,11 +103,25 @@ class ColaboradorController
             $colaborador->sexo = $_POST['sexo'];
             $colaborador->identificacion = $_POST['identificacion'];
             $colaborador->fecha_nacimiento = $_POST['fecha_nacimiento'];
+
+            // ---- INICIO LÓGICA DE FOTO ----
+            if (isset($_FILES['foto_perfil']) && $_FILES['foto_perfil']['error'] === UPLOAD_ERR_OK) {
+                $uploadDir = __DIR__ . '/../../public/uploads/fotos/';
+                // Crea un nombre único para el archivo para evitar colisiones
+                $fileName = uniqid() . '-' . basename($_FILES['foto_perfil']['name']);
+                $targetFile = $uploadDir . $fileName;
+
+                // Mueve el archivo temporal a la carpeta de destino
+                if (move_uploaded_file($_FILES['foto_perfil']['tmp_name'], $targetFile)) {
+                    $colaborador->foto_perfil = $fileName;
+                } else {
+                    $colaborador->foto_perfil = null; // O manejar el error
+                }
+            }
             $colaborador->correo_personal = $_POST['correo_personal'];
             $colaborador->telefono = $_POST['telefono'];
             $colaborador->celular = $_POST['celular'];
             $colaborador->direccion = $_POST['direccion'];
-
             if ($colaborador->crear()) {
                 header('Location: ' . BASE_PATH . '/colaboradores');
                 exit();

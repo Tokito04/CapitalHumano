@@ -47,7 +47,7 @@ class Colaborador
      */
     public function crear()
     {
-        $query = 'INSERT INTO ' . $this->table . ' (primer_nombre, segundo_nombre, primer_apellido, segundo_apellido, sexo, identificacion, fecha_nacimiento, correo_personal, telefono, celular, direccion) VALUES (:primer_nombre, :segundo_nombre, :primer_apellido, :segundo_apellido, :sexo, :identificacion, :fecha_nacimiento, :correo_personal, :telefono, :celular, :direccion)';
+        $query = 'INSERT INTO ' . $this->table . ' (primer_nombre, segundo_nombre, primer_apellido, segundo_apellido, sexo, identificacion, fecha_nacimiento, foto_perfil, correo_personal, telefono, celular, direccion) VALUES (:primer_nombre, :segundo_nombre, :primer_apellido, :segundo_apellido, :sexo, :identificacion, :fecha_nacimiento, :foto_perfil, :correo_personal, :telefono, :celular, :direccion)';
 
         $stmt = $this->conn->prepare($query);
 
@@ -63,6 +63,7 @@ class Colaborador
         $stmt->bindParam(':sexo', $this->sexo);
         $stmt->bindParam(':identificacion', $this->identificacion);
         $stmt->bindParam(':fecha_nacimiento', $this->fecha_nacimiento);
+        $stmt->bindParam(':foto_perfil', $this->foto_perfil);
         $stmt->bindParam(':correo_personal', $this->correo_personal);
         $stmt->bindParam(':telefono', $this->telefono);
         $stmt->bindParam(':celular', $this->celular);
@@ -79,7 +80,7 @@ class Colaborador
      */
     public function actualizar()
     {
-        $query = 'UPDATE ' . $this->table . ' SET primer_nombre = :primer_nombre, segundo_nombre = :segundo_nombre, primer_apellido = :primer_apellido, segundo_apellido = :segundo_apellido, sexo = :sexo, identificacion = :identificacion, fecha_nacimiento = :fecha_nacimiento, correo_personal = :correo_personal, telefono = :telefono, celular = :celular, direccion = :direccion WHERE id = :id';
+        $query = 'UPDATE ' . $this->table . ' SET primer_nombre = :primer_nombre, segundo_nombre = :segundo_nombre, primer_apellido = :primer_apellido, segundo_apellido = :segundo_apellido, sexo = :sexo, identificacion = :identificacion, fecha_nacimiento = :fecha_nacimiento, foto_perfil = :foto_perfil, correo_personal = :correo_personal, telefono = :telefono, celular = :celular, direccion = :direccion WHERE id = :id';
 
         $stmt = $this->conn->prepare($query);
 
@@ -91,6 +92,7 @@ class Colaborador
         $stmt->bindParam(':sexo', $this->sexo);
         $stmt->bindParam(':identificacion', $this->identificacion);
         $stmt->bindParam(':fecha_nacimiento', $this->fecha_nacimiento);
+        $stmt->bindParam(':foto_perfil', $this->foto_perfil);
         $stmt->bindParam(':correo_personal', $this->correo_personal);
         $stmt->bindParam(':telefono', $this->telefono);
         $stmt->bindParam(':celular', $this->celular);

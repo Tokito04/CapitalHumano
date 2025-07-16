@@ -7,6 +7,6 @@
 <body>
 <h1>Bienvenido, <?php echo htmlspecialchars($_SESSION['user_name']); ?>!</h1>
 <p>Has iniciado sesión correctamente.</p>
-<a href="/logout">Cerrar Sesión</a>
+<a href="<?php echo BASE_PATH; ?>/logout">Cerrar Sesión</a>
 </body>
 </html>
