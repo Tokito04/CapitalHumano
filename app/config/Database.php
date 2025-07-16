@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Config;
+namespace App\config;
 
 use PDO;
 use PDOException;
@@ -19,12 +19,12 @@ class Database
     private function __construct()
     {
         // Leemos las credenciales desde las variables de entorno
-        $this->host = getenv('DB_HOST');
-        $this->db_name = getenv('DB_DATABASE');
-        $this->username = getenv('DB_USERNAME');
-        $this->password = getenv('DB_PASSWORD');
-        $this->port = getenv('DB_PORT');
-
+        $this->host = $_ENV['DB_HOST'];
+        $this->db_name = $_ENV['DB_DATABASE'];
+        $this->username = $_ENV['DB_USERNAME'];
+        $this->password = $_ENV['DB_PASSWORD'];
+        $this->port = $_ENV['DB_PORT'];
+        // Construimos el DSN (Data Source Name) para la conexión
         $dsn = "pgsql:host={$this->host};port={$this->port};dbname={$this->db_name}";
 
         try {
