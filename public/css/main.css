@@ -753,8 +753,8 @@ hr {
 .modal-content {
     margin: auto;
     display: block;
-    width: 80%;
-    max-width: 700px;
+    width: 40%;
+    max-width: 400px;
     border-radius: 10px;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
     animation: zoom 0.3s ease-out;

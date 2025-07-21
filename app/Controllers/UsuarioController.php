@@ -38,7 +38,7 @@ class UsuarioController
 
             if ($usuario->crear()) {
                 // Redirigir al login o a una página de éxito
-                header('Location:'.BASE_PATH. '/login');
+                header('Location:'.BASE_PATH. '/usuarios');
             } else {
                 echo "Hubo un error al registrar el usuario.";
             }

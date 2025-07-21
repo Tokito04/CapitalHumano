@@ -78,7 +78,7 @@
     </div>
     <div id="miModal" class="modal">
         <span class="close">&times;</span>
-        <img class="modal-content" id="imgModal" sizes="50%">
+        <img class="modal-content" id="imgModal" sizes="20%">
     </div>
     <script>
         // Obtener los elementos del modal
