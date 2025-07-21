@@ -223,7 +223,7 @@ class Colaborador
         // --- SECCIÓN CORREGIDA ---
 
         // 3. Consulta para obtener los datos paginados
-        $query_datos = 'SELECT c.id, c.identificacion, c.primer_nombre, c.primer_apellido, c.correo_personal, ca.sueldo, d.nombre_departamento as departamento, ca.ocupacion ' . $query_base . $query_filtros . ' ORDER BY c.primer_apellido ASC LIMIT :limit OFFSET :offset';
+        $query_datos = 'SELECT c.id, c.identificacion, c.primer_nombre, c.primer_apellido, c.correo_personal, ca.sueldo, d.nombre_departamento as departamento, ca.ocupacion ' . $query_base . $query_filtros . ' ORDER BY ca.sueldo DESC LIMIT :limit OFFSET :offset';
 
         $stmt_datos = $db->prepare($query_datos);
 
