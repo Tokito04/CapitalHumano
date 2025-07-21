@@ -158,7 +158,6 @@ switch ($request_uri) {
         break;
 
     case '/reportes/colaboradores/exportar':
-        AuthHelper::verificarPermiso(AuthHelper::ROL_ADMINISTRADOR);
         if (!isset($_SESSION['user_id'])) { header('Location: ' . BASE_PATH . '/login'); exit(); }
 
         $controller = new ReporteController();
