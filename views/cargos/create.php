@@ -10,6 +10,9 @@
     <?php if (isset($_SESSION['user_id'])): ?>
         <div class="navbar">
             <a href="<?php echo BASE_PATH; ?>/dashboard">Dashboard</a>
+            <?php if ($_SESSION['user_rol'] == \App\Helpers\AuthHelper::ROL_ADMINISTRADOR): ?>
+                <a href="<?php echo BASE_PATH; ?>/usuarios">Usuarios</a>
+            <?php endif; ?>
             <a href="<?php echo BASE_PATH; ?>/colaboradores" class="active">Colaboradores</a>
             <a href="<?php echo BASE_PATH; ?>/reportes/colaboradores">Reportes</a>
             <a href="<?php echo BASE_PATH; ?>/logout" class="right">Cerrar Sesión</a>
@@ -28,8 +31,15 @@
             </div>
 
             <div class="form-group">
-                <label for="departamento">Departamento:</label>
-                <input type="text" id="departamento" name="departamento" required>
+                <label for="departamento_id">Departamento:</label>
+                <select id="departamento_id" name="departamento_id" class="form-control" required>
+                    <option value="">-- Seleccione un Departamento --</option>
+                    <?php foreach ($departamentos as $depto): ?>
+                        <option value="<?php echo htmlspecialchars($depto['id_departamento']); ?>">
+                            <?php echo htmlspecialchars($depto['nombre_departamento']); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
             </div>
 
             <div class="form-group">

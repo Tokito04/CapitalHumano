@@ -13,7 +13,7 @@ class Cargo
     public $id;
     public $colaborador_id;
     public $sueldo;
-    public $departamento;
+    public $departamento_id;
     public $ocupacion;
     public $tipo_contrato;
     public $fecha_contratacion;
@@ -33,23 +33,21 @@ class Cargo
         // Antes de crear un nuevo cargo, desactivamos todos los cargos anteriores de este colaborador.
         $this->desactivarCargosAnteriores();
         $sueldo_formateado = number_format($this->sueldo, 2, '.', '');
-        $datosParaFirmar = $this->colaborador_id . $sueldo_formateado . $this->departamento . $this->ocupacion . $this->fecha_contratacion;
-
-        // 2. Firmamos los datos con nuestra clave privada.
+        $datosParaFirmar = $this->colaborador_id . $sueldo_formateado . $this->departamento_id . $this->ocupacion . $this->fecha_contratacion;
         $this->firma_digital = $this->generarFirma($datosParaFirmar);
-        // 3. Modificamos la consulta para incluir la firma.
-        $query = 'INSERT INTO ' . $this->table . ' (colaborador_id, sueldo, departamento, ocupacion, tipo_contrato, fecha_contratacion, activo, firma_digital) VALUES (:colaborador_id, :sueldo, :departamento, :ocupacion, :tipo_contrato, :fecha_contratacion, TRUE, :firma_digital)';
+
+        // Actualizamos la consulta para usar departamento_id
+        $query = 'INSERT INTO ' . $this->table . ' (colaborador_id, sueldo, departamento_id, ocupacion, tipo_contrato, fecha_contratacion, activo, firma_digital) VALUES (:colaborador_id, :sueldo, :departamento_id, :ocupacion, :tipo_contrato, :fecha_contratacion, TRUE, :firma_digital)';
 
         $stmt = $this->conn->prepare($query);
+
+        // Sanitizar y vincular datos
         $stmt->bindParam(':colaborador_id', $this->colaborador_id, PDO::PARAM_INT);
         $stmt->bindParam(':sueldo', $this->sueldo);
-        $stmt->bindParam(':departamento', $this->departamento);
+        $stmt->bindParam(':departamento_id', $this->departamento_id, PDO::PARAM_INT); // <-- CAMBIO CLAVE
         $stmt->bindParam(':ocupacion', $this->ocupacion);
         $stmt->bindParam(':tipo_contrato', $this->tipo_contrato);
-        // ... (los bindParam para los otros campos no cambian) ...
         $stmt->bindParam(':fecha_contratacion', $this->fecha_contratacion);
-
-        // 4. Vinculamos la nueva firma digital.
         $stmt->bindParam(':firma_digital', $this->firma_digital);
 
         if ($stmt->execute()) {
@@ -99,7 +97,17 @@ class Cargo
     public static function listarPorColaborador($colaborador_id)
     {
         $db = Database::getInstance()->getConnection();
-        $query = 'SELECT * FROM cargos WHERE colaborador_id = :colaborador_id ORDER BY fecha_contratacion DESC';
+        $query = 'SELECT 
+            ca.*, 
+            d.nombre_departamento as departamento_nombre 
+        FROM 
+            cargos ca
+        LEFT JOIN 
+            departamentos d ON ca.departamento_id = d.id_departamento
+        WHERE 
+            ca.colaborador_id = :colaborador_id 
+        ORDER BY 
+            ca.fecha_contratacion DESC';
         $stmt = $db->prepare($query);
         $stmt->bindParam(':colaborador_id', $colaborador_id, PDO::PARAM_INT);
         $stmt->execute();
@@ -117,9 +125,9 @@ class Cargo
         if (empty($cargo['firma_digital'])) {
             return false;
         }
-
+        $sueldo_formateado = number_format($cargo['sueldo'], 2, '.', '');
         // 1. Reconstruimos la cadena de datos original, en el MISMO ORDEN que al firmar.
-        $datosOriginales = $cargo['colaborador_id'] . $cargo['sueldo'] . $cargo['departamento'] . $cargo['ocupacion'] . $cargo['fecha_contratacion'];
+        $datosOriginales = $cargo['colaborador_id'] . $sueldo_formateado . $cargo['departamento_id'] . $cargo['ocupacion'] . $cargo['fecha_contratacion'];
 
         // 2. Leemos la clave pública desde el archivo.
         $publicKeyPath = __DIR__ . '/../../keys/public_key.pem';
@@ -141,5 +149,21 @@ class Cargo
         openssl_free_key($publicKey);
 
         return $esValido === 1;
+    }
+
+    /**
+     * Encuentra la primera fecha de contratación de un colaborador.
+     */
+    public static function obtenerPrimeraContratacion($colaborador_id)
+    {
+        $db = Database::getInstance()->getConnection();
+        // Busca la fecha de contratación más antigua (el primer registro)
+        $query = 'SELECT fecha_contratacion FROM cargos WHERE colaborador_id = :colaborador_id ORDER BY fecha_contratacion ASC LIMIT 1';
+        $stmt = $db->prepare($query);
+        $stmt->bindParam(':colaborador_id', $colaborador_id, PDO::PARAM_INT);
+        $stmt->execute();
+
+        $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $resultado ? $resultado['fecha_contratacion'] : null;
     }
 }

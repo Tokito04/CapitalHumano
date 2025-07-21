@@ -25,6 +25,8 @@ class Colaborador
     public $telefono;
     public $celular;
     public $direccion;
+    public $estatus;
+    public $historial_academico_pdf;
 
     public function __construct()
     {
@@ -108,7 +110,8 @@ class Colaborador
                     correo_personal = :correo_personal, 
                     telefono = :telefono, 
                     celular = :celular, 
-                    direccion = :direccion 
+                    direccion = :direccion,
+                    estatus = :estatus
                   WHERE id = :id';
 
             $stmt = $this->conn->prepare($query);
@@ -126,6 +129,7 @@ class Colaborador
             $stmt->bindParam(':telefono', $this->telefono);
             $stmt->bindParam(':celular', $this->celular);
             $stmt->bindParam(':direccion', $this->direccion);
+            $stmt->bindParam(':estatus', $this->estatus);
             $stmt->bindParam(':id', $this->id, PDO::PARAM_INT);
 
             // 3. Intenta ejecutar la consulta.
@@ -187,18 +191,21 @@ class Colaborador
     {
         $db = Database::getInstance()->getConnection();
 
+        // 1. Definimos la base de la consulta con los JOINs
         $query_base = '
         FROM 
             colaboradores c
         LEFT JOIN 
             cargos ca ON c.id = ca.colaborador_id AND ca.activo = TRUE
+        LEFT JOIN
+            departamentos d ON ca.departamento_id = d.id_departamento
         WHERE
             c.activo = TRUE';
 
         $params = [];
         $query_filtros = '';
 
-        // Construir la parte de los filtros
+        // 2. Construimos la parte de los filtros dinámicamente
         if (!empty($filtros['busqueda'])) {
             $query_filtros .= ' AND (c.primer_nombre ILIKE :busqueda OR c.primer_apellido ILIKE :busqueda)';
             $params[':busqueda'] = '%' . $filtros['busqueda'] . '%';
@@ -212,34 +219,106 @@ class Colaborador
             $params[':salario_min'] = $filtros['salario_min'];
         }
 
-        // Consulta para obtener los datos paginados
-        $query_datos = 'SELECT c.id, c.identificacion, c.primer_nombre, c.primer_apellido, c.correo_personal, ca.sueldo, ca.departamento, ca.ocupacion ' . $query_base . $query_filtros . ' ORDER BY c.primer_apellido ASC LIMIT :limit OFFSET :offset';
+        // --- SECCIÓN CORREGIDA ---
+
+        // 3. Consulta para obtener los datos paginados
+        $query_datos = 'SELECT c.id, c.identificacion, c.primer_nombre, c.primer_apellido, c.correo_personal, ca.sueldo, d.nombre_departamento as departamento, ca.ocupacion ' . $query_base . $query_filtros . ' ORDER BY c.primer_apellido ASC LIMIT :limit OFFSET :offset';
 
         $stmt_datos = $db->prepare($query_datos);
-        // Añadir parámetros de paginación
-        $params[':limit'] = $limit;
-        $params[':offset'] = $offset;
+
+        // Añadir los parámetros de paginación a la lista de parámetros
+        $params_paginados = $params; // Copiamos los filtros
+        $params_paginados[':limit'] = $limit;
+        $params_paginados[':offset'] = $offset;
 
         // Vincular todos los parámetros
-        foreach ($params as $key => &$val) {
+        foreach ($params_paginados as $key => &$val) {
             if(is_int($val)) {
-                $stmt_datos->bindParam($key, $val, PDO::PARAM_INT);
+                $stmt_datos->bindParam($key, $val, \PDO::PARAM_INT);
             } else {
                 $stmt_datos->bindParam($key, $val);
             }
         }
 
         $stmt_datos->execute();
-        $resultados = $stmt_datos->fetchAll(PDO::FETCH_ASSOC);
+        $resultados = $stmt_datos->fetchAll(\PDO::FETCH_ASSOC);
 
-        // Consulta para contar el total de resultados filtrados
+        // 4. Consulta para contar el total de filas (con los mismos filtros)
         $query_total = 'SELECT COUNT(c.id) ' . $query_base . $query_filtros;
         $stmt_total = $db->prepare($query_total);
-        // Volvemos a ejecutar solo con los filtros, sin paginación
-        unset($params[':limit'], $params[':offset']);
-        $stmt_total->execute($params);
+        $stmt_total->execute($params); // Usamos solo los parámetros de filtro
         $total_filas = $stmt_total->fetchColumn();
 
+        // 5. Devolvemos el arreglo completo
         return ['resultados' => $resultados, 'total' => $total_filas];
     }
+
+    /**
+     * Cuenta el total de colaboradores activos agrupados por sexo.
+     */
+    public static function contarPorSexo()
+    {
+        $db = Database::getInstance()->getConnection();
+        $query = "SELECT sexo, COUNT(id) as total FROM colaboradores WHERE activo = TRUE GROUP BY sexo";
+        $stmt = $db->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Cuenta el total de colaboradores activos agrupados por rangos de edad.
+     */
+    public static function contarPorRangoEdad()
+    {
+        $db = Database::getInstance()->getConnection();
+        // Esta consulta calcula la edad de cada colaborador y la agrupa en rangos.
+        $query = "
+        SELECT 
+            CASE
+                WHEN date_part('year', age(fecha_nacimiento)) BETWEEN 18 AND 25 THEN '18-25'
+                WHEN date_part('year', age(fecha_nacimiento)) BETWEEN 26 AND 35 THEN '26-35'
+                WHEN date_part('year', age(fecha_nacimiento)) BETWEEN 36 AND 45 THEN '36-45'
+                WHEN date_part('year', age(fecha_nacimiento)) > 45 THEN 'Más de 45'
+                ELSE 'Menor de 18'
+            END as rango_edad,
+            COUNT(*) as total
+        FROM colaboradores
+        WHERE activo = TRUE
+        GROUP BY rango_edad
+        ORDER BY rango_edad;
+    ";
+        $stmt = $db->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Cuenta el total de colaboradores activos agrupados por dirección.
+     * Limita los resultados a las 10 direcciones más comunes para claridad.
+     */
+    public static function contarPorDireccion()
+    {
+        $db = Database::getInstance()->getConnection();
+        $query = "
+        SELECT direccion, COUNT(id) as total 
+        FROM colaboradores 
+        WHERE activo = TRUE AND direccion IS NOT NULL AND direccion != ''
+        GROUP BY direccion 
+        ORDER BY total DESC 
+        LIMIT 10;
+    ";
+        $stmt = $db->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    public static function contarPorDepartamento()
+    {
+        $db = Database::getInstance()->getConnection();
+        $query = "
+        SELECT count(nombre_departamento) as total from departamentos";
+
+        $stmt = $db->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 }

@@ -10,6 +10,9 @@
     <?php if (isset($_SESSION['user_id'])): ?>
         <div class="navbar">
             <a href="<?php echo BASE_PATH; ?>/dashboard">Dashboard</a>
+            <?php if ($_SESSION['user_rol'] == \App\Helpers\AuthHelper::ROL_ADMINISTRADOR): ?>
+                <a href="<?php echo BASE_PATH; ?>/usuarios">Usuarios</a>
+            <?php endif; ?>
             <a href="<?php echo BASE_PATH; ?>/colaboradores" class="active">Colaboradores</a>
             <a href="<?php echo BASE_PATH; ?>/reportes/colaboradores">Reportes</a>
             <a href="<?php echo BASE_PATH; ?>/logout" class="right">Cerrar Sesión</a>
@@ -18,8 +21,9 @@
 
     <div class="main-container">
         <h2>Lista de Colaboradores</h2>
-        <a href="<?php echo BASE_PATH; ?>/colaboradores/crear" class="action-button">Añadir Nuevo Colaborador</a>
-
+        <?php if ($_SESSION['user_rol'] == \App\Helpers\AuthHelper::ROL_ADMINISTRADOR): ?>
+            <a href="<?php echo BASE_PATH; ?>/colaboradores/crear" class="action-button">Añadir Nuevo Colaborador</a>
+        <?php endif; ?>
         <table class="data-table">
             <thead>
             <tr>
@@ -28,6 +32,7 @@
                 <th>Nombre Completo</th>
                 <th>Email</th>
                 <th>Celular</th>
+                <th>Estatus</th>
                 <th>Acciones</th>
             </tr>
             </thead>
@@ -47,17 +52,14 @@
                     <td><?php echo htmlspecialchars($colaborador['primer_nombre'] . ' ' . $colaborador['primer_apellido']); ?></td>
                     <td><?php echo htmlspecialchars($colaborador['correo_personal']); ?></td>
                     <td><?php echo htmlspecialchars($colaborador['celular']); ?></td>
+                    <td><?php echo htmlspecialchars($colaborador['estatus']); ?></td>
                     <td>
                         <div class="table-actions">
-                            <a class = "edit-btn" href="<?php echo BASE_PATH; ?>/colaboradores/editar?id=<?php echo $colaborador['id']; ?>">Editar</a>
+                            <?php if ($_SESSION['user_rol'] == \App\Helpers\AuthHelper::ROL_ADMINISTRADOR): ?>
+                                <a class = "edit-btn" href="<?php echo BASE_PATH; ?>/colaboradores/editar?id=<?php echo $colaborador['id']; ?>">Editar</a>
+                            <?php endif; ?>
+                            <a href="<?php echo BASE_PATH; ?>/vacaciones?colaborador_id=<?php echo $colaborador['id']; ?>" class="btn btn-sm btn-warning">Vacaciones</a>
 
-                            <form action="<?php echo BASE_PATH; ?>/colaboradores/status" method="POST" onsubmit="return confirm('¿Estás seguro de que deseas cambiar el estado de este colaborador?');">
-                                <input type="hidden" name="id" value="<?php echo $colaborador['id']; ?>">
-                                <input type="hidden" name="estado_actual" value="<?php echo $colaborador['activo'] ? '1' : '0'; ?>">
-                                <button type="submit">
-                                    <?php echo $colaborador['activo'] ? 'Desactivar' : 'Activar'; ?>
-                                </button>
-                            </form>
                         </div>
                     </td>
                 </tr>

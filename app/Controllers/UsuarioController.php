@@ -3,7 +3,7 @@
 namespace App\Controllers;
 
 use App\Models\Usuario;
-
+use App\Utils\Validator;
 class UsuarioController
 {
     /**
@@ -57,7 +57,7 @@ class UsuarioController
 
             // Verificar si el usuario existe y si la contraseña es correcta
             // Esto cumple el requisito de "Implementar hash en las credenciales"
-            if ($user && password_verify($password, $user['password_hash'])) {
+            if ($user && password_verify($password, $user['password_hash']) && $user['activo']) {
 
                 // Iniciar sesión y guardar datos del usuario
                 $_SESSION['user_id'] = $user['id'];
@@ -74,4 +74,47 @@ class UsuarioController
             }
     }
 
+    /**
+     * Muestra la lista de todos los usuarios.
+     */
+    public function index()
+    {
+        $usuarios = Usuario::listarTodos();
+        require_once __DIR__ . '/../../views/usuarios/index.php';
+    }
+
+    /**
+     * Muestra el formulario para editar un usuario.
+     */
+    public function showEditForm()
+    {
+        $id = $_GET['id'];
+        $usuario = Usuario::findById($id); // Reutilizamos el método findById
+        // Aquí podríamos obtener la lista de roles si queremos un dropdown dinámico
+        require_once __DIR__ . '/../../views/usuarios/edit.php';
+    }
+
+    /**
+     * Procesa la actualización de un usuario.
+     */
+    public function update()
+    {
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            // Aquí iría la validación de los datos...
+
+            $usuario = new Usuario();
+            $usuario->id = $_POST['id'];
+            $usuario->nombre = Validator::sanitizeString($_POST['nombre']);
+            $usuario->email = Validator::sanitizeEmail($_POST['email']);
+            $usuario->rol_id = $_POST['rol_id'];
+            // El checkbox envía '1' si está marcado, si no, no envía nada.
+            $usuario->activo = $_POST['activo'];
+
+            if ($usuario->actualizar()) {
+                header('Location: ' . BASE_PATH . '/usuarios');
+                exit();
+            }
+        }
+    }
 }

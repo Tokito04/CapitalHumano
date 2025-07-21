@@ -72,4 +72,58 @@ class Usuario
 
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+
+    /**
+     * Obtiene todos los usuarios administrativos de la base de datos.
+     */
+    public static function listarTodos()
+    {
+        $db = Database::getInstance()->getConnection();
+        // Hacemos un JOIN con la tabla roles para obtener el nombre del rol
+        $query = 'SELECT u.id, u.nombre, u.email, u.activo, r.nombre_rol FROM usuarios u LEFT JOIN roles r ON u.rol_id = r.id ORDER BY u.nombre ASC';
+        $stmt = $db->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Actualiza un usuario existente en la base de datos.
+     */
+    public function actualizar()
+    {
+
+        $query = 'UPDATE ' . $this->table . ' SET nombre = :nombre, email = :email, rol_id = :rol_id, activo = :activo WHERE id = :id';
+
+        $stmt = $this->conn->prepare($query);
+
+        $stmt->bindParam(':nombre', $this->nombre);
+        $stmt->bindParam(':email', $this->email);
+        $stmt->bindParam(':rol_id', $this->rol_id, PDO::PARAM_INT);
+        $stmt->bindParam(':activo', $this->activo, PDO::PARAM_BOOL);
+        $stmt->bindParam(':id', $this->id, PDO::PARAM_INT);
+
+        if ($stmt->execute()) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Busca un usuario por su ID.
+     * Útil para mostrar el formulario de edición.
+     */
+    public static function findById($id)
+    {
+        $db = Database::getInstance()->getConnection();
+        // Hacemos un JOIN con roles para obtener también el rol_id
+        $query = 'SELECT u.id, u.nombre, u.email, u.activo, u.rol_id 
+              FROM usuarios u 
+              WHERE u.id = :id 
+              LIMIT 1';
+        $stmt = $db->prepare($query);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 }

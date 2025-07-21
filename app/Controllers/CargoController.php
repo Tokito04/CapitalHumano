@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Models\Cargo;
+use App\Models\Departamento;
 use App\Models\Colaborador;
 use App\Utils\Validator;
 
@@ -16,6 +17,7 @@ class CargoController
         $colaborador_id = $_GET['colaborador_id'];
         // Obtenemos los datos del colaborador para mostrar su nombre en la vista
         $colaborador = Colaborador::findById($colaborador_id);
+        $departamentos = Departamento::listarTodos(); // Obtenemos la lista
 
         require_once __DIR__ . '/../../views/cargos/create.php';
     }
@@ -31,7 +33,7 @@ class CargoController
             $cargo = new Cargo();
             $cargo->colaborador_id = $_POST['colaborador_id'];
             $cargo->sueldo = $_POST['sueldo'];
-            $cargo->departamento = Validator::sanitizeString($_POST['departamento']);
+            $cargo->departamento_id = Validator::sanitizeString($_POST['departamento_id']);
             $cargo->ocupacion = Validator::sanitizeString($_POST['ocupacion']);
             $cargo->tipo_contrato = $_POST['tipo_contrato'];
             $cargo->fecha_contratacion = $_POST['fecha_contratacion'];

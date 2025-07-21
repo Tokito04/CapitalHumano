@@ -4,17 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editar Colaborador - Capital Humano</title>
-    <link rel="stylesheet" href="<?php echo BASE_PATH; ?>/css/main.css">
+    <link rel="stylesheet" href="<?php use App\Helpers\AuthHelper;
+    use App\Models\Cargo;
+    echo BASE_PATH; ?>/css/main.css">
 </head>
-<body class="main-page">
-    <?php if (isset($_SESSION['user_id'])): ?>
-        <div class="navbar">
-            <a href="<?php echo BASE_PATH; ?>/dashboard">Dashboard</a>
+
+            <?php if ($_SESSION['user_rol'] == AuthHelper::ROL_ADMINISTRADOR): ?>
+                <a href="<?php echo BASE_PATH; ?>/usuarios">Usuarios</a>
+            <?php endif; ?>
             <a href="<?php echo BASE_PATH; ?>/colaboradores" class="active">Colaboradores</a>
             <a href="<?php echo BASE_PATH; ?>/reportes/colaboradores">Reportes</a>
+            <a href="<?php echo BASE_PATH; ?>/colaboradores" class="active">Colaboradores</a>
             <a href="<?php echo BASE_PATH; ?>/logout" class="right">Cerrar Sesión</a>
+            <a href="<?php echo BASE_PATH; ?>/colaboradores" class="active">Colaboradores</a>
         </div>
-    <?php endif; ?>
+
 
     <div class="form-container">
         <h2>Editar Colaborador</h2>
@@ -76,11 +80,34 @@
                     <label for="celular">Celular:</label>
                     <input type="text" id="celular" name="celular" value="<?php echo htmlspecialchars($colaborador['celular']); ?>">
                 </div>
-            </div>
 
+                <div class="form-group">
+                    <label for="estatus">Estatus del Colaborador:</label>
+                    <select id="estatus" name="estatus" class="form-control" required>
+                        <option value="Activo Laborando" <?php echo ($colaborador['estatus'] === 'Activo Laborando') ? 'selected' : ''; ?>>Activo Laborando</option>
+                        <option value="De Vacaciones" <?php echo ($colaborador['estatus'] === 'De Vacaciones') ? 'selected' : ''; ?>>De Vacaciones</option>
+                        <option value="Licencia Médica" <?php echo ($colaborador['estatus'] === 'Licencia Médica') ? 'selected' : ''; ?>>Licencia Médica</option>
+                        <option value="Incapacitado" <?php echo ($colaborador['estatus'] === 'Incapacitado') ? 'selected' : ''; ?>>Incapacitado</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-grid">
             <div class="form-group">
                 <label for="foto_perfil">Foto de Perfil:</label>
                 <input type="file" id="foto_perfil" name="foto_perfil" accept="image/*">
+            </div>
+
+            <div class="form-group">
+                <label for="historial_academico_pdf">Historial Académico (PDF):</label>
+                <input type="file" id="historial_academico_pdf" name="historial_academico_pdf" accept="application/pdf">
+
+                <?php // Mostramos un enlace al PDF actual si existe ?>
+                <?php if (!empty($colaborador['historial_academico_pdf'])): ?>
+                    <p class="mt-2">
+                        <a href="<?php echo BASE_PATH . '/uploads/pdf/' . htmlspecialchars($colaborador['historial_academico_pdf']); ?>" target="_blank">Ver Historial Actual</a>
+                    </p>
+                <?php endif; ?>
+            </div>
             </div>
 
             <div class="form-group">
@@ -110,7 +137,7 @@
                     <tr>
                         <td><?php echo htmlspecialchars($cargo['ocupacion']); ?></td>
                         <td>$<?php echo number_format($cargo['sueldo'], 2); ?></td>
-                        <td><?php echo htmlspecialchars($cargo['departamento']); ?></td>
+                        <td><?php echo htmlspecialchars($cargo['departamento_nombre']); ?></td>
                         <td><?php echo htmlspecialchars($cargo['fecha_contratacion']); ?></td>
                         <td>
                             <?php if ($cargo['activo']): ?>
@@ -122,7 +149,7 @@
                         <td>
                             <?php
                             // Llamamos a nuestro método de verificación
-                            $esIntegro = \App\Models\Cargo::verificarIntegridad($cargo);
+                            $esIntegro = Cargo::verificarIntegridad($cargo);
                             ?>
                             <?php if ($esIntegro): ?>
                                 <span class="badge bg-success">Verificado</span>

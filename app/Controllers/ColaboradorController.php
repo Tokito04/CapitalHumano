@@ -79,7 +79,7 @@ class ColaboradorController
             }
 
             // 3. Si no hay errores, crear y poblar el objeto Colaborador
-            $colaborador = new \App\Models\Colaborador();
+            $colaborador = new Colaborador();
 
             // ¡¡ESTA ES LA PARTE MÁS IMPORTANTE!!
             $colaborador->id = $_POST['id']; // Asignamos el ID desde el POST
@@ -95,6 +95,7 @@ class ColaboradorController
             $colaborador->telefono = Validator::sanitizeAlphaNumeric($_POST['telefono']);
             $colaborador->celular = Validator::sanitizeAlphaNumeric($_POST['celular']);
             $colaborador->direccion = Validator::sanitizeString($_POST['direccion']);
+            $colaborador->estatus = Validator::sanitizeString($_POST['estatus']);
 
             // 4. Manejar la subida de la foto
             if (isset($_FILES['foto_perfil']) && $_FILES['foto_perfil']['error'] === UPLOAD_ERR_OK) {
@@ -105,11 +106,24 @@ class ColaboradorController
                     $colaborador->foto_perfil = $fileName;
                 }
             } else {
-                $datos_actuales = \App\Models\Colaborador::findById($_POST['id']);
+                $datos_actuales = Colaborador::findById($_POST['id']);
                 $colaborador->foto_perfil = $datos_actuales['foto_perfil'];
             }
 
-            // 5. Llamar al modelo para actualizar en la base de datos
+            // Inicio Lógica de Historial Académico
+            if (isset($_FILES['historial_academico_pdf']) && $_FILES['historial_academico_pdf']['error'] === UPLOAD_ERR_OK) {
+                $uploadDirPdf = __DIR__ . '/../../public/uploads/pdf/';
+                $fileNamePdf = uniqid() . '-' . basename($_FILES['historial_academico_pdf']['name']);
+                $targetFilePdf = $uploadDirPdf . $fileNamePdf;
+
+                if (move_uploaded_file($_FILES['historial_academico_pdf']['tmp_name'], $targetFilePdf)) {
+                    $colaborador->historial_academico_pdf = $fileNamePdf;
+                }
+            } else {
+                // Si no se sube un nuevo PDF, mantenemos el existente.
+                $colaborador->historial_academico_pdf = isset($colaborador->historial_academico_pdf) ? $colaborador->historial_academico_pdf : null;
+            }
+            // Fin Lógica de Historial Académico
             if ($colaborador->actualizar()) {
                 header('Location: ' . BASE_PATH . '/colaboradores');
                 exit();
@@ -126,6 +140,7 @@ class ColaboradorController
     public function store()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
             $errors = [];
             if (!Validator::validateRequired($_POST['primer_nombre'])) {
                 $errors[] = "El primer nombre es obligatorio.";
@@ -187,6 +202,8 @@ class ColaboradorController
                     $colaborador->foto_perfil = null; // O manejar el error
                 }
             }
+
+
             $colaborador->correo_personal = Validator::sanitizeEmail($_POST['correo_personal']);
             $colaborador->telefono = Validator::sanitizeAlphaNumeric($_POST['telefono']);
             $colaborador->celular = Validator::sanitizeAlphaNumeric($_POST['celular']);
