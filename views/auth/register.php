@@ -1,13 +1,12 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Capital Humano</title>
-    <link rel="stylesheet" href="<?php echo BASE_PATH; ?>/css/auth.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrar Usuario - Capital Humano</title>
+    <link rel="stylesheet" href="<?php echo BASE_PATH; ?>/css/main.css">
 </head>
-
-<body>
+<body class="auth-page">
     <div class="auth-container">
         <h2>Registrar Nuevo Usuario</h2>
         <form method="POST">

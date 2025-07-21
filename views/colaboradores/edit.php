@@ -4,11 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editar Colaborador - Capital Humano</title>
-    <link rel="stylesheet" href="<?php echo BASE_PATH; ?>/css/colaboradores.css">
+    <link rel="stylesheet" href="<?php echo BASE_PATH; ?>/css/main.css">
 </head>
-<body>
+<body class="main-page">
+    <?php if (isset($_SESSION['user_id'])): ?>
+        <div class="navbar">
+            <a href="<?php echo BASE_PATH; ?>/dashboard">Dashboard</a>
+            <a href="<?php echo BASE_PATH; ?>/colaboradores" class="active">Colaboradores</a>
+            <a href="<?php echo BASE_PATH; ?>/reportes/colaboradores">Reportes</a>
+            <a href="<?php echo BASE_PATH; ?>/logout" class="right">Cerrar Sesión</a>
+        </div>
+    <?php endif; ?>
+
     <div class="form-container">
         <h2>Editar Colaborador</h2>
+        <a href="<?php echo BASE_PATH; ?>/cargos/crear?colaborador_id=<?php echo $colaborador['id']; ?>" class="btn btn-success" style="margin-bottom: 20px;">Añadir Nuevo Cargo/Movimiento</a>
 
         <form action="<?php echo BASE_PATH; ?>/colaboradores/update" method="POST" enctype="multipart/form-data">
             <input type="hidden" name="id" value="<?php echo htmlspecialchars($colaborador['id']); ?>">
@@ -80,6 +90,55 @@
 
             <input type="submit" value="Actualizar Cambios" class="submit-btn">
         </form>
+
+        <hr style="margin-top: 40px;">
+        <h3>Historial de Cargos y Movimientos</h3>
+
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Ocupación</th>
+                <th>Sueldo</th>
+                <th>Departamento</th>
+                <th>Fecha Contratación</th>
+                <th>Estado</th>
+                <th>Integridad</th> </tr>
+            </thead>
+            <tbody>
+            <?php if (!empty($cargos)): ?>
+                <?php foreach ($cargos as $cargo): ?>
+                    <tr>
+                        <td><?php echo htmlspecialchars($cargo['ocupacion']); ?></td>
+                        <td>$<?php echo number_format($cargo['sueldo'], 2); ?></td>
+                        <td><?php echo htmlspecialchars($cargo['departamento']); ?></td>
+                        <td><?php echo htmlspecialchars($cargo['fecha_contratacion']); ?></td>
+                        <td>
+                            <?php if ($cargo['activo']): ?>
+                                <span class="badge bg-success">Activo</span>
+                            <?php else: ?>
+                                <span class="badge bg-secondary">Histórico</span>
+                            <?php endif; ?>
+                        </td>
+                        <td>
+                            <?php
+                            // Llamamos a nuestro método de verificación
+                            $esIntegro = \App\Models\Cargo::verificarIntegridad($cargo);
+                            ?>
+                            <?php if ($esIntegro): ?>
+                                <span class="badge bg-success">Verificado</span>
+                            <?php else: ?>
+                                <span class="badge bg-danger">Inválido</span>
+                            <?php endif; ?>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <tr>
+                    <td colspan="6">No hay cargos registrados para este colaborador.</td>
+                </tr>
+            <?php endif; ?>
+            </tbody>
+        </table>
     </div>
 </body>
 </html>

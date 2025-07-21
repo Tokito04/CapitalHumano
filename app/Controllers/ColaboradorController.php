@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Models\Colaborador;
+use App\Models\Cargo;
 use App\Utils\Validator;
 class ColaboradorController
 {
@@ -11,7 +12,18 @@ class ColaboradorController
      */
     public function index()
     {
-        $colaboradores = Colaborador::listarTodos();
+        // Lógica de Paginación
+        $registros_por_pagina = 10;
+        $pagina_actual = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
+        $offset = ($pagina_actual - 1) * $registros_por_pagina;
+
+        // Obtenemos los datos paginados desde el modelo
+        $datosPaginados = Colaborador::listarTodos($registros_por_pagina, $offset);
+
+        $colaboradores = $datosPaginados['resultados'];
+        $total_registros = $datosPaginados['total'];
+        $total_paginas = ceil($total_registros / $registros_por_pagina);
+
         require_once __DIR__ . '/../../views/colaboradores/index.php';
     }
 
@@ -31,7 +43,7 @@ class ColaboradorController
         // Obtenemos el ID del colaborador de la URL
         $id = $_GET['id'];
         $colaborador = Colaborador::findById($id);
-
+        $cargos = Cargo::listarPorColaborador($id);
         // Si el colaborador no existe, podríamos redirigir a un error 404
         if (!$colaborador) {
             // Manejar el error...
@@ -48,42 +60,62 @@ class ColaboradorController
     public function update()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $colaborador = new Colaborador();
+            $errors = [];
 
-            // Asignar todos los valores desde el POST
-            $colaborador->id = $_POST['id'];
-            $colaborador->primer_nombre = $_POST['primer_nombre'];
-            $colaborador->segundo_nombre = $_POST['segundo_nombre'];
-            $colaborador->primer_apellido = $_POST['primer_apellido'];
-            $colaborador->segundo_apellido = $_POST['segundo_apellido'];
+            // 1. Validar Datos
+            if (!Validator::validateRequired($_POST['primer_nombre'])) $errors[] = "El primer nombre es obligatorio.";
+            if (!Validator::validateRequired($_POST['primer_apellido'])) $errors[] = "El primer apellido es obligatorio.";
+
+            $identificacion_sanitizada = Validator::sanitizeAlphaNumeric($_POST['identificacion']);
+            if (!Validator::validatePanamanianID($identificacion_sanitizada)) $errors[] = "El formato de la identificación no es válido.";
+
+            // Añadir más validaciones si es necesario...
+
+            // 2. Si hay errores, redirigir de vuelta
+            if (!empty($errors)) {
+                $_SESSION['errors'] = $errors;
+                header('Location: ' . BASE_PATH . '/colaboradores/editar?id=' . $_POST['id']);
+                exit();
+            }
+
+            // 3. Si no hay errores, crear y poblar el objeto Colaborador
+            $colaborador = new \App\Models\Colaborador();
+
+            // ¡¡ESTA ES LA PARTE MÁS IMPORTANTE!!
+            $colaborador->id = $_POST['id']; // Asignamos el ID desde el POST
+
+            $colaborador->primer_nombre = Validator::sanitizeString($_POST['primer_nombre']);
+            $colaborador->segundo_nombre = Validator::sanitizeString($_POST['segundo_nombre']);
+            $colaborador->primer_apellido = Validator::sanitizeString($_POST['primer_apellido']);
+            $colaborador->segundo_apellido = Validator::sanitizeString($_POST['segundo_apellido']);
             $colaborador->sexo = $_POST['sexo'];
-            $colaborador->identificacion = $_POST['identificacion'];
+            $colaborador->identificacion = $identificacion_sanitizada;
             $colaborador->fecha_nacimiento = $_POST['fecha_nacimiento'];
-            if (isset($_FILES['foto_perfil']) && !empty($_FILES['foto_perfil']['name'])) {
-                if ($_FILES['foto_perfil']['error'] === UPLOAD_ERR_OK) {
-                    $uploadDir = __DIR__ . '/../../public/uploads/fotos/';
-                    $fileName = uniqid() . '-' . basename($_FILES['foto_perfil']['name']);
-                    $targetFile = $uploadDir . $fileName;
+            $colaborador->correo_personal = Validator::sanitizeEmail($_POST['correo_personal']);
+            $colaborador->telefono = Validator::sanitizeAlphaNumeric($_POST['telefono']);
+            $colaborador->celular = Validator::sanitizeAlphaNumeric($_POST['celular']);
+            $colaborador->direccion = Validator::sanitizeString($_POST['direccion']);
 
-                    if (move_uploaded_file($_FILES['foto_perfil']['tmp_name'], $targetFile)) {
-                        $colaborador->foto_perfil = $fileName;
-                        // Opcional: Borrar la foto antigua si existe
-                    }
+            // 4. Manejar la subida de la foto
+            if (isset($_FILES['foto_perfil']) && $_FILES['foto_perfil']['error'] === UPLOAD_ERR_OK) {
+                $uploadDir = __DIR__ . '/../../public/uploads/fotos/';
+                $fileName = uniqid() . '-' . basename($_FILES['foto_perfil']['name']);
+                $targetFile = $uploadDir . $fileName;
+                if (move_uploaded_file($_FILES['foto_perfil']['tmp_name'], $targetFile)) {
+                    $colaborador->foto_perfil = $fileName;
                 }
             } else {
-                // Si no se sube una nueva foto, mantenemos la que ya estaba en la BD
-                $datos_actuales = Colaborador::findById($_POST['id']);
+                $datos_actuales = \App\Models\Colaborador::findById($_POST['id']);
                 $colaborador->foto_perfil = $datos_actuales['foto_perfil'];
             }
-            // ---- FIN LÓGICA DE FOTO ----
-            $colaborador->correo_personal = $_POST['correo_personal'];
-            $colaborador->telefono = $_POST['telefono'];
-            $colaborador->celular = $_POST['celular'];
-            $colaborador->direccion = $_POST['direccion'];
 
+            // 5. Llamar al modelo para actualizar en la base de datos
             if ($colaborador->actualizar()) {
                 header('Location: ' . BASE_PATH . '/colaboradores');
                 exit();
+            } else {
+                // Este es el error que veías antes
+                die("Error final: El modelo recibió los datos pero no pudo actualizar la base de datos.");
             }
         }
     }
@@ -94,14 +126,51 @@ class ColaboradorController
     public function store()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $errors = [];
+            if (!Validator::validateRequired($_POST['primer_nombre'])) {
+                $errors[] = "El primer nombre es obligatorio.";
+            }
+            if (!Validator::validateRequired($_POST['primer_apellido'])) {
+                $errors[] = "El primer apellido es obligatorio.";
+            }
+            if (!Validator::validateRequired($_POST['identificacion'])) {
+                $errors[] = "La identificación es obligatoria.";
+            }
+            if (!Validator::validatePanamanianID($_POST['identificacion'])) {
+                $errors[] = "La identificación no es válida.";
+            }
+            if (!Validator::validateRequired($_POST['fecha_nacimiento'])) {
+                $errors[] = "La fecha de nacimiento es obligatoria.";
+            }
+            if (!Validator::validateRequired($_POST['correo_personal'])) {
+                $errors[] = "El correo electrónico es obligatorio.";
+            }
+            if (!Validator::validateEmail($_POST['correo_personal'])) {
+                $errors[] = "El formato del correo electrónico no es válido.";
+            }
+
+            if (!empty($errors)) {
+                // Si hay errores, guardarlos en la sesión y redirigir al formulario
+                $_SESSION['errors'] = $errors;
+                header('Location: ' . BASE_PATH . '/colaboradores/crear');
+                exit();
+            }
 
             $colaborador = new Colaborador();
-            $colaborador->primer_nombre = $_POST['primer_nombre'];
-            $colaborador->segundo_nombre = $_POST['segundo_nombre'];
-            $colaborador->primer_apellido = $_POST['primer_apellido'];
-            $colaborador->segundo_apellido = $_POST['segundo_apellido'];
+            $colaborador->primer_nombre = Validator::sanitizeString($_POST['primer_nombre']);
+            $colaborador->primer_apellido = Validator::sanitizeString($_POST['primer_apellido']);
+            if (isset($_POST['segundo_nombre'])) {
+                $colaborador->segundo_nombre = Validator::sanitizeString($_POST['segundo_nombre']);
+            } else {
+                $colaborador->segundo_nombre = null; // O un valor por defecto
+            }
+            if (isset($_POST['segundo_apellido'])) {
+                $colaborador->segundo_apellido = Validator::sanitizeString($_POST['segundo_apellido']);
+            } else {
+                $colaborador->segundo_apellido = null; // O un valor por defecto
+            }
             $colaborador->sexo = $_POST['sexo'];
-            $colaborador->identificacion = $_POST['identificacion'];
+            $colaborador->identificacion = Validator::sanitizeAlphaNumeric($_POST['identificacion']);
             $colaborador->fecha_nacimiento = $_POST['fecha_nacimiento'];
 
             // ---- INICIO LÓGICA DE FOTO ----
@@ -118,10 +187,10 @@ class ColaboradorController
                     $colaborador->foto_perfil = null; // O manejar el error
                 }
             }
-            $colaborador->correo_personal = $_POST['correo_personal'];
-            $colaborador->telefono = $_POST['telefono'];
-            $colaborador->celular = $_POST['celular'];
-            $colaborador->direccion = $_POST['direccion'];
+            $colaborador->correo_personal = Validator::sanitizeEmail($_POST['correo_personal']);
+            $colaborador->telefono = Validator::sanitizeAlphaNumeric($_POST['telefono']);
+            $colaborador->celular = Validator::sanitizeAlphaNumeric($_POST['celular']);
+            $colaborador->direccion = Validator::sanitizeString($_POST['direccion']);
             if ($colaborador->crear()) {
                 header('Location: ' . BASE_PATH . '/colaboradores');
                 exit();

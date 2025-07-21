@@ -2,14 +2,34 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Capital Humano</title>
-    <link rel="stylesheet" href="<?php echo BASE_PATH; ?>/css/colaboradores.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Colaborador - Capital Humano</title>
+    <link rel="stylesheet" href="<?php echo BASE_PATH; ?>/css/main.css">
 </head>
+<body class="main-page">
+    <?php if (isset($_SESSION['user_id'])): ?>
+        <div class="navbar">
+            <a href="<?php echo BASE_PATH; ?>/dashboard">Dashboard</a>
+            <a href="<?php echo BASE_PATH; ?>/colaboradores" class="active">Colaboradores</a>
+            <a href="<?php echo BASE_PATH; ?>/reportes/colaboradores">Reportes</a>
+            <a href="<?php echo BASE_PATH; ?>/logout" class="right">Cerrar Sesión</a>
+        </div>
+    <?php endif; ?>
 
-<body>
     <div class="form-container">
-        <h2>Registrar Nuevo Colaborador</h2>
+        <?php if (!empty($_SESSION['errors'])): ?>
+            <div class="error-message">
+                <strong>Por favor, corrige los siguientes errores:</strong>
+                <ul style="margin: 10px 0 0 20px;">
+                    <?php foreach ($_SESSION['errors'] as $error): ?>
+                        <li><?php echo $error; ?></li>
+                    <?php endforeach; ?>
+                </ul>
+            </div>
+            <?php unset($_SESSION['errors']); ?>
+        <?php endif; ?>
 
+        <h2>Registrar Nuevo Colaborador</h2>
         <form action="<?php echo BASE_PATH; ?>/colaboradores/store" method="POST" enctype="multipart/form-data">
             <div class="form-grid">
                 <div class="form-group">

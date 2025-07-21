@@ -2,11 +2,20 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Capital Humano</title>
-    <link rel="stylesheet" href="<?php echo BASE_PATH; ?>/css/colaboradores.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Colaboradores - Capital Humano</title>
+    <link rel="stylesheet" href="<?php echo BASE_PATH; ?>/css/main.css">
 </head>
+<body class="main-page">
+    <?php if (isset($_SESSION['user_id'])): ?>
+        <div class="navbar">
+            <a href="<?php echo BASE_PATH; ?>/dashboard">Dashboard</a>
+            <a href="<?php echo BASE_PATH; ?>/colaboradores" class="active">Colaboradores</a>
+            <a href="<?php echo BASE_PATH; ?>/reportes/colaboradores">Reportes</a>
+            <a href="<?php echo BASE_PATH; ?>/logout" class="right">Cerrar Sesión</a>
+        </div>
+    <?php endif; ?>
 
-<body>
     <div class="main-container">
         <h2>Lista de Colaboradores</h2>
         <a href="<?php echo BASE_PATH; ?>/colaboradores/crear" class="action-button">Añadir Nuevo Colaborador</a>
@@ -27,8 +36,8 @@
                 <tr>
                     <td>
                         <?php if (!empty($colaborador['foto_perfil'])): ?>
-                            <a href="<?php echo BASE_PATH . '/uploads/fotos/' . htmlspecialchars($colaborador['foto_perfil']); ?>" target="_blank">
-                                <img src="<?php echo BASE_PATH . '/uploads/fotos/' . htmlspecialchars($colaborador['foto_perfil']); ?>" alt="Foto de perfil" width="50" height="50" style="object-fit: cover; border-radius: 50%;">
+                            <a href="<?php echo BASE_PATH . '/uploads/fotos/' . htmlspecialchars($colaborador['foto_perfil']); ?>" target="_blank" class="enlace-modal-foto">
+                                <img src="<?php echo BASE_PATH . '/uploads/fotos/' . htmlspecialchars($colaborador['foto_perfil']); ?>" alt="Foto de perfil" class="profile-photo">
                             </a>
                         <?php else: ?>
                             <span>Sin foto</span>
@@ -55,6 +64,49 @@
             <?php endforeach; ?>
             </tbody>
         </table>
+        <nav aria-label="Navegación de páginas">
+            <ul class="pagination">
+                <?php for ($i = 1; $i <= $total_paginas; $i++): ?>
+                    <li class="page-item <?php echo ($i == $pagina_actual) ? 'active' : ''; ?>">
+                        <a class="page-link" href="?pagina=<?php echo $i; ?>"><?php echo $i; ?></a>
+                    </li>
+                <?php endfor; ?>
+            </ul>
+        </nav>
     </div>
+    <div id="miModal" class="modal">
+        <span class="close">&times;</span>
+        <img class="modal-content" id="imgModal" sizes="50%">
+    </div>
+    <script>
+        // Obtener los elementos del modal
+        let modal = document.getElementById("miModal");
+        let modalImg = document.getElementById("imgModal");
+        let enlaces = document.getElementsByClassName("enlace-modal-foto");
+
+        // Recorrer todos los enlaces y añadirles el evento de clic
+        for (let i = 0; i < enlaces.length; i++) {
+            enlaces[i].onclick = function(e) {
+                e.preventDefault(); // Prevenir la acción por defecto del enlace
+                modal.style.display = "block";
+                modalImg.src = this.href;
+            }
+        }
+
+        // Obtener el elemento <span> que cierra el modal
+        let span = document.getElementsByClassName("close")[0];
+
+        // Cuando el usuario hace clic en <span> (x), cerrar el modal
+        span.onclick = function() {
+            modal.style.display = "none";
+        }
+
+        // También cerrar el modal si se hace clic fuera de la imagen
+        window.onclick = function(event) {
+            if (event.target === modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
 </body>
 </html>

@@ -10,7 +10,9 @@ $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '\..\\');
 $dotenv->load();
 define('BASE_PATH', '/SemestralDesVII/CapitalHumano/public');
 use App\Controllers\UsuarioController;
-
+use App\Controllers\ColaboradorController;
+use App\Controllers\CargoController;
+use App\Controllers\ReporteController;
 // --- INICIO DEL ROUTER MEJORADO ---
 $base_path = '/SemestralDesVII/CapitalHumano/public'; // Define el subdirectorio de tu proyecto
 $request_uri = $_SERVER['REQUEST_URI'];
@@ -73,14 +75,14 @@ switch ($request_uri) {
     case '/colaboradores':
         if (!isset($_SESSION['user_id'])) { header('Location: ' . BASE_PATH . '/login'); exit(); }
 
-        $controller = new App\Controllers\ColaboradorController();
+        $controller = new ColaboradorController();
         $controller->index();
         break;
 
     case '/colaboradores/crear':
         if (!isset($_SESSION['user_id'])) { header('Location: ' . BASE_PATH . '/login'); exit(); }
 
-        $controller = new App\Controllers\ColaboradorController();
+        $controller = new ColaboradorController();
         $controller->showCreateForm();
         break;
 
@@ -88,7 +90,7 @@ switch ($request_uri) {
         if (!isset($_SESSION['user_id'])) { header('Location: ' . BASE_PATH . '/login'); exit(); }
 
         if ($method === 'POST') {
-            $controller = new App\Controllers\ColaboradorController();
+            $controller = new ColaboradorController();
             $controller->store();
         }
         break;
@@ -97,7 +99,7 @@ switch ($request_uri) {
     case '/colaboradores/editar':
         if (!isset($_SESSION['user_id'])) { header('Location: ' . BASE_PATH . '/login'); exit(); }
 
-        $controller = new App\Controllers\ColaboradorController();
+        $controller = new ColaboradorController();
         $controller->showEditForm();
         break;
 
@@ -106,20 +108,48 @@ switch ($request_uri) {
         if (!isset($_SESSION['user_id'])) { header('Location: ' . BASE_PATH . '/login'); exit(); }
 
         if ($method === 'POST') {
-            $controller = new App\Controllers\ColaboradorController();
+            $controller = new ColaboradorController();
             $controller->update();
         }
         break;
-
-    // ... en el switch ($request_uri)
 
     case '/colaboradores/status':
         if (!isset($_SESSION['user_id'])) { header('Location: ' . BASE_PATH . '/login'); exit(); }
 
         if ($method === 'POST') {
-            $controller = new App\Controllers\ColaboradorController();
+            $controller = new ColaboradorController();
             $controller->toggleStatus();
         }
+        break;
+
+    case '/cargos/crear':
+        if (!isset($_SESSION['user_id'])) { header('Location: ' . BASE_PATH . '/login'); exit(); }
+
+        $controller = new CargoController();
+        $controller->showCreateForm();
+        break;
+
+    case '/cargos/store':
+        if (!isset($_SESSION['user_id'])) { header('Location: ' . BASE_PATH . '/login'); exit(); }
+
+        if ($method === 'POST') {
+            $controller = new CargoController();
+            $controller->store();
+        }
+        break;
+
+    case '/reportes/colaboradores':
+        if (!isset($_SESSION['user_id'])) { header('Location: ' . BASE_PATH . '/login'); exit(); }
+
+        $controller = new ReporteController();
+        $controller->colaboradores();
+        break;
+
+    case '/reportes/colaboradores/exportar':
+        if (!isset($_SESSION['user_id'])) { header('Location: ' . BASE_PATH . '/login'); exit(); }
+
+        $controller = new ReporteController();
+        $controller->exportarColaboradores();
         break;
 
     default:

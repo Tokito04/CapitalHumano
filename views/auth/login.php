@@ -1,19 +1,19 @@
-<?php if (isset($_GET['error'])): ?>
-    <div class="error-message">
-        El email o la contraseña son incorrectos.
-    </div>
-<?php endif; ?>
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Capital Humano</title>
-    <link rel="stylesheet" href="<?php echo BASE_PATH; ?>/css/auth.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión - Capital Humano</title>
+    <link rel="stylesheet" href="<?php echo BASE_PATH; ?>/css/main.css">
 </head>
-
-<body>
+<body class="auth-page">
     <div class="auth-container">
+        <?php if (isset($_GET['error'])): ?>
+            <div class="error-message">
+                El email o la contraseña son incorrectos.
+            </div>
+        <?php endif; ?>
+
         <h2>Iniciar Sesión</h2>
         <form action="" method="POST">
             <div class="form-group">
