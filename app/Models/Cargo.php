@@ -11,7 +11,7 @@ use PDO;
  * Maneja las operaciones CRUD de los cargos y la firma digital.
  *
  * @package App\Models
- * @author Tu Nombre
+ * @author Analía Solís <analia.solis@utp.ac.pa> - ACJ Development Team
  * @version 1.0
  */
 class Cargo

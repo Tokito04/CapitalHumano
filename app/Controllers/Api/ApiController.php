@@ -11,7 +11,7 @@ use App\Models\Colaborador;
  * del sistema de Capital Humano. Incluye autenticación por API Key.
  *
  * @package App\Controllers\Api
- * @author Tu Nombre
+ * @author Joseph Guerrero <joseph.guerrero2@utp.ac.pa> - ACJ Development Team
  * @version 1.0
  */
 class ApiController

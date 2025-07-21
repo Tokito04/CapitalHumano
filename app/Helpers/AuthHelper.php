@@ -9,7 +9,7 @@ namespace App\Helpers;
  * para el sistema de Capital Humano. Maneja verificación de permisos por roles.
  *
  * @package App\Helpers
- * @author Tu Nombre
+ * @author Joseph Guerrero <joseph.guerrero2@utp.ac.pa> ACJ Development Team
  * @version 1.0
  */
 class AuthHelper

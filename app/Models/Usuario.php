@@ -12,7 +12,7 @@ use PDO;
  * Maneja autenticación, registro y operaciones CRUD de usuarios.
  *
  * @package App\Models
- * @author Tu Nombre
+ * @author Analía Solís <analia.solis@utp.ac.pa> - ACJ Development Team
  * @version 1.0
  */
 class Usuario

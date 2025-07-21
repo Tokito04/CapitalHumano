@@ -12,7 +12,7 @@ use PDO;
  * Maneja las operaciones relacionadas con los departamentos organizacionales.
  *
  * @package App\Models
- * @author Tu Nombre
+ * @author Analía Solís <analia.solis@utp.ac.pa> - ACJ Development Team
  * @version 1.0
  */
 class Departamento

@@ -13,7 +13,7 @@ use PDOException;
  * Maneja todas las operaciones CRUD relacionadas con los colaboradores.
  *
  * @package App\Models
- * @author Tu Nombre
+ * @author Analía Solís <analia.solis@utp.ac.pa> - ACJ Development Team
  * @version 1.0
  */
 class Colaborador

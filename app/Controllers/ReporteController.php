@@ -14,7 +14,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
  * Incluye visualización de datos y exportación a Excel.
  *
  * @package App\Controllers
- * @author Tu Nombre
+ * @author Carlos Echevers <carlos.echevers@utp.ac.pa> ACJ Develpment Team
  * @version 1.0
  */
 class ReporteController

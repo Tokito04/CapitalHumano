@@ -14,7 +14,7 @@ use App\Utils\Validator;
  * de los colaboradores en el sistema de Capital Humano.
  *
  * @package App\Controllers
- * @author Tu Nombre
+ * @author Carlos Echevers <carlos.echevers@utp.ac.pa> ACJ Develpment Team
  * @version 1.0
  */
 class CargoController

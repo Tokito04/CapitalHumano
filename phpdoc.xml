@@ -11,9 +11,6 @@
         <!-- Directorio principal con la lógica de la aplicación -->
         <directory>app</directory>
 
-        <!-- Incluimos el directorio public para documentar el index.php -->
-        <directory>public</directory>
-
         <!-- Ignoramos explícitamente las carpetas que no queremos documentar -->
         <ignore>vendor/*</ignore>
         <ignore>public/css/*</ignore>

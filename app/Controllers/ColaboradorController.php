@@ -13,7 +13,7 @@ use App\Utils\Validator;
  * Incluye funcionalidades de CRUD, validaciones y manejo de archivos.
  *
  * @package App\Controllers
- * @author Tu Nombre
+ * @author Carlos Echevers <carlos.echevers@utp.ac.pa> ACJ Develpment Team
  * @version 1.0
  */
 class ColaboradorController

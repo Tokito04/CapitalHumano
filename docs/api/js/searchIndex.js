@@ -641,11 +641,6 @@ Search.appendIndex(
             "summary": "Valida\u0020el\u0020formato\u0020de\u0020una\u0020c\u00E9dula\u0020paname\u00F1a.",
             "url": "classes/App-Utils-Validator.html#method_validatePanamanianID"
         },                {
-            "fqsen": "\\BASE_PATH",
-            "name": "BASE_PATH",
-            "summary": "",
-            "url": "namespaces/default.html#constant_BASE_PATH"
-        },                {
             "fqsen": "\\",
             "name": "\\",
             "summary": "",

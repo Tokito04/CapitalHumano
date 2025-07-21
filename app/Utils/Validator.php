@@ -9,7 +9,7 @@ namespace App\Utils;
  * en la aplicación de Capital Humano.
  *
  * @package App\Utils
- * @author Tu Nombre
+ * @author Joseph Guerrero <joseph.guerrero2@utp.ac.pa> - ACJ Development Team
  * @version 1.0
  */
 class Validator

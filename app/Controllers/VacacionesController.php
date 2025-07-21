@@ -15,7 +15,7 @@ use Dompdf\Options;
  * para los colaboradores del sistema de Capital Humano.
  *
  * @package App\Controllers
- * @author Tu Nombre
+ * @author Joseph Guerrero <joseph.guerrero2@utp.ac.pa> ACJ Development Team
  * @version 1.0
  */
 class VacacionesController

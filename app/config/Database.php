@@ -12,7 +12,7 @@ use PDOException;
  * Utiliza variables de entorno para la configuración de conexión.
  *
  * @package App\Config
- * @author Tu Nombre
+ * @author Analía Solís <analia.solis@utp.ac.pa> - ACJ Development Team
  * @version 1.0
  */
 class Database

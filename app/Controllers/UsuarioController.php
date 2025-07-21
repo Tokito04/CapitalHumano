@@ -12,7 +12,7 @@ use App\Utils\Validator;
  * Incluye autenticación, registro, y gestión de usuarios administrativos.
  *
  * @package App\Controllers
- * @author Tu Nombre
+ * @author Carlos Echevers <carlos.echevers@utp.ac.pa> ACJ Develpment Team
  * @version 1.0
  */
 class UsuarioController
