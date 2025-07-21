@@ -95,7 +95,7 @@ Sigue las instrucciones correspondientes al software que hayas instalado.
 
 1. Asegúrate de que todos los servicios de tu servidor (XAMPP o WampServer) estén corriendo (icono en verde).  
 2. Abre tu navegador y ve a la siguiente URL:  
-   http://localhost/CapitalHumano/public/
+   http://localhost/CapitalHumano/public/login
 
 3. Serás redirigido a la página de login.
 
