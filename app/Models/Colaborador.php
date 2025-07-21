@@ -66,7 +66,7 @@ class Colaborador
      */
     public function crear()
     {
-        $query = 'INSERT INTO ' . $this->table . ' (primer_nombre, segundo_nombre, primer_apellido, segundo_apellido, sexo, identificacion, fecha_nacimiento, foto_perfil, correo_personal, telefono, celular, direccion) VALUES (:primer_nombre, :segundo_nombre, :primer_apellido, :segundo_apellido, :sexo, :identificacion, :fecha_nacimiento, :foto_perfil, :correo_personal, :telefono, :celular, :direccion)';
+        $query = 'INSERT INTO ' . $this->table . ' (primer_nombre, segundo_nombre, primer_apellido, segundo_apellido, sexo, identificacion, fecha_nacimiento, foto_perfil, correo_personal, telefono, celular, direccion, historial_academico_pdf) VALUES (:primer_nombre, :segundo_nombre, :primer_apellido, :segundo_apellido, :sexo, :identificacion, :fecha_nacimiento, :foto_perfil, :correo_personal, :telefono, :celular, :direccion, :historial_academico_pdf)';
 
         $stmt = $this->conn->prepare($query);
 
@@ -77,6 +77,7 @@ class Colaborador
         $stmt->bindParam(':primer_apellido', $this->primer_apellido);
         $stmt->bindParam(':segundo_apellido', $this->segundo_apellido);
         $stmt->bindParam(':sexo', $this->sexo);
+        $stmt->bindParam(':historial_academico_pdf', $this->historial_academico_pdf);
         $stmt->bindParam(':identificacion', $this->identificacion);
         $stmt->bindParam(':fecha_nacimiento', $this->fecha_nacimiento);
         $stmt->bindParam(':foto_perfil', $this->foto_perfil);

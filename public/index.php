@@ -157,6 +157,7 @@ switch ($request_uri) {
         break;
 
     case '/reportes/colaboradores/exportar':
+        AuthHelper::verificarPermiso(AuthHelper::ROL_ADMINISTRADOR);
         if (!isset($_SESSION['user_id'])) { header('Location: ' . BASE_PATH . '/login'); exit(); }
 
         $controller = new ReporteController();
@@ -197,6 +198,7 @@ switch ($request_uri) {
             $controller->update();
         }
         break;
+
     // --- RUTA DE LA API ---
     case '/api/colaboradores/stats/sexo':
         $controller = new ApiController();

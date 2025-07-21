@@ -6,17 +6,16 @@
     <title>Editar Colaborador - Capital Humano</title>
     <link rel="stylesheet" href="<?php use App\Helpers\AuthHelper;
     use App\Models\Cargo;
-    echo BASE_PATH; ?>/css/main.css">
+    echo BASE_PATH ?>/css/main.css">
 </head>
-
+    <div class="navbar">
+        <a href="<?php echo BASE_PATH; ?>/dashboard">Dashboard</a>
             <?php if ($_SESSION['user_rol'] == AuthHelper::ROL_ADMINISTRADOR): ?>
                 <a href="<?php echo BASE_PATH; ?>/usuarios">Usuarios</a>
             <?php endif; ?>
             <a href="<?php echo BASE_PATH; ?>/colaboradores" class="active">Colaboradores</a>
             <a href="<?php echo BASE_PATH; ?>/reportes/colaboradores">Reportes</a>
-            <a href="<?php echo BASE_PATH; ?>/colaboradores" class="active">Colaboradores</a>
             <a href="<?php echo BASE_PATH; ?>/logout" class="right">Cerrar Sesión</a>
-            <a href="<?php echo BASE_PATH; ?>/colaboradores" class="active">Colaboradores</a>
         </div>
 
 
