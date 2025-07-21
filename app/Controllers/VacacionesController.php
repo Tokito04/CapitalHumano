@@ -7,10 +7,24 @@ use App\Models\Cargo;
 use DateTime;
 use Dompdf\Dompdf;
 use Dompdf\Options;
+
+/**
+ * Clase VacacionesController
+ *
+ * Controlador que maneja el cálculo y generación de documentos de vacaciones
+ * para los colaboradores del sistema de Capital Humano.
+ *
+ * @package App\Controllers
+ * @author Tu Nombre
+ * @version 1.0
+ */
 class VacacionesController
 {
     /**
      * Muestra la vista principal del módulo de vacaciones para un colaborador.
+     * Calcula automáticamente los días de vacaciones ganados basado en días trabajados.
+     *
+     * @return void Carga la vista con los datos de vacaciones calculados
      */
     public function index()
     {
@@ -40,6 +54,12 @@ class VacacionesController
         require_once __DIR__ . '/../../views/vacaciones/index.php';
     }
 
+    /**
+     * Genera un documento PDF con el resuelto de vacaciones del colaborador.
+     * Incluye toda la información necesaria para el trámite oficial.
+     *
+     * @return void Genera y descarga un archivo PDF con el resuelto de vacaciones
+     */
     public function generarResuelto()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {

@@ -5,17 +5,59 @@ namespace App\config;
 use PDO;
 use PDOException;
 
+/**
+ * Clase Database
+ *
+ * Implementa el patrón Singleton para gestionar la conexión a la base de datos PostgreSQL.
+ * Utiliza variables de entorno para la configuración de conexión.
+ *
+ * @package App\Config
+ * @author Tu Nombre
+ * @version 1.0
+ */
 class Database
 {
+    /**
+     * @var string Host de la base de datos
+     */
     private $host;
+
+    /**
+     * @var string Nombre de la base de datos
+     */
     private $db_name;
+
+    /**
+     * @var string Usuario de la base de datos
+     */
     private $username;
+
+    /**
+     * @var string Contraseña de la base de datos
+     */
     private $password;
+
+    /**
+     * @var string Puerto de la base de datos
+     */
     private $port;
+
+    /**
+     * @var PDO Objeto de conexión PDO
+     */
     private $conn;
 
+    /**
+     * @var Database|null Instancia única de la clase (Singleton)
+     */
     private static $instance = null;
 
+    /**
+     * Constructor privado para implementar el patrón Singleton.
+     * Establece la conexión a la base de datos usando variables de entorno.
+     *
+     * @throws PDOException Si falla la conexión a la base de datos
+     */
     private function __construct()
     {
         // Leemos las credenciales desde las variables de entorno
@@ -36,6 +78,11 @@ class Database
         }
     }
 
+    /**
+     * Obtiene la instancia única de la clase Database (patrón Singleton).
+     *
+     * @return Database La instancia única de la clase
+     */
     public static function getInstance()
     {
         if (self::$instance == null) {
@@ -44,6 +91,11 @@ class Database
         return self::$instance;
     }
 
+    /**
+     * Obtiene la conexión PDO a la base de datos.
+     *
+     * @return PDO El objeto de conexión PDO
+     */
     public function getConnection()
     {
         return $this->conn;

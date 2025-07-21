@@ -7,10 +7,22 @@ use App\Models\Departamento;
 use App\Models\Colaborador;
 use App\Utils\Validator;
 
+/**
+ * Clase CargoController
+ *
+ * Controlador que maneja todas las operaciones relacionadas con los cargos
+ * de los colaboradores en el sistema de Capital Humano.
+ *
+ * @package App\Controllers
+ * @author Tu Nombre
+ * @version 1.0
+ */
 class CargoController
 {
     /**
      * Muestra el formulario para añadir un nuevo cargo a un colaborador.
+     *
+     * @return void Carga la vista del formulario de creación de cargo
      */
     public function showCreateForm()
     {
@@ -24,6 +36,9 @@ class CargoController
 
     /**
      * Almacena un nuevo cargo en la base de datos.
+     * Incluye validación de datos del formulario.
+     *
+     * @return void Redirige según el resultado de la operación
      */
     public function store()
     {

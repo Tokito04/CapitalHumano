@@ -4,10 +4,23 @@ namespace App\Controllers;
 
 use App\Models\Usuario;
 use App\Utils\Validator;
+
+/**
+ * Clase UsuarioController
+ *
+ * Controlador que maneja todas las operaciones relacionadas con usuarios del sistema.
+ * Incluye autenticación, registro, y gestión de usuarios administrativos.
+ *
+ * @package App\Controllers
+ * @author Tu Nombre
+ * @version 1.0
+ */
 class UsuarioController
 {
     /**
      * Muestra la vista del formulario de login.
+     *
+     * @return void Carga la vista del formulario de login
      */
     public function showLoginForm()
     {
@@ -17,6 +30,8 @@ class UsuarioController
 
     /**
      * Muestra la vista del formulario de registro de un nuevo usuario.
+     *
+     * @return void Carga la vista del formulario de registro
      */
     public function showRegisterForm()
     {
@@ -26,6 +41,8 @@ class UsuarioController
 
     /**
      * Procesa la solicitud de creación de un nuevo usuario.
+     *
+     * @return void Redirige según el resultado de la operación
      */
     public function register()
     {
@@ -45,7 +62,11 @@ class UsuarioController
         }
     }
 
-    // Aquí irán los métodos para procesar el login, logout, etc.
+    /**
+     * Procesa la solicitud de autenticación de usuario.
+     *
+     * @return void Redirige según el resultado de la autenticación
+     */
     public function processLogin()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -75,7 +96,9 @@ class UsuarioController
     }
 
     /**
-     * Muestra la lista de todos los usuarios.
+     * Muestra la lista de todos los usuarios del sistema.
+     *
+     * @return void Carga la vista con la lista de usuarios
      */
     public function index()
     {
@@ -84,7 +107,9 @@ class UsuarioController
     }
 
     /**
-     * Muestra el formulario para editar un usuario.
+     * Muestra el formulario para editar un usuario existente.
+     *
+     * @return void Carga la vista del formulario de edición con los datos del usuario
      */
     public function showEditForm()
     {
@@ -95,7 +120,10 @@ class UsuarioController
     }
 
     /**
-     * Procesa la actualización de un usuario.
+     * Procesa la actualización de un usuario existente.
+     * Incluye validación de datos del formulario.
+     *
+     * @return void Redirige según el resultado de la operación
      */
     public function update()
     {

@@ -4,22 +4,77 @@ namespace App\Models;
 use App\Config\Database;
 use PDO;
 
+/**
+ * Clase Cargo
+ *
+ * Modelo que representa un cargo laboral de un colaborador en el sistema.
+ * Maneja las operaciones CRUD de los cargos y la firma digital.
+ *
+ * @package App\Models
+ * @author Tu Nombre
+ * @version 1.0
+ */
 class Cargo
 {
+    /**
+     * @var PDO Conexión a la base de datos
+     */
     private $conn;
+
+    /**
+     * @var string Nombre de la tabla en la base de datos
+     */
     private $table = 'cargos';
 
-    // Propiedades del objeto
+    /**
+     * @var int|null ID único del cargo
+     */
     public $id;
+
+    /**
+     * @var int ID del colaborador al que pertenece el cargo
+     */
     public $colaborador_id;
+
+    /**
+     * @var float Sueldo del cargo
+     */
     public $sueldo;
+
+    /**
+     * @var int ID del departamento
+     */
     public $departamento_id;
+
+    /**
+     * @var string Ocupación o puesto de trabajo
+     */
     public $ocupacion;
+
+    /**
+     * @var string Tipo de contrato (permanente, temporal, etc.)
+     */
     public $tipo_contrato;
+
+    /**
+     * @var string Fecha de contratación (YYYY-MM-DD)
+     */
     public $fecha_contratacion;
+
+    /**
+     * @var bool Estado del cargo (activo/inactivo)
+     */
     public $activo;
+
+    /**
+     * @var string Firma digital del cargo
+     */
     public $firma_digital;
 
+    /**
+     * Constructor de la clase Cargo.
+     * Inicializa la conexión a la base de datos.
+     */
     public function __construct()
     {
         $this->conn = Database::getInstance()->getConnection();
@@ -27,6 +82,9 @@ class Cargo
 
     /**
      * Crea un nuevo cargo para un colaborador.
+     * Desactiva cargos anteriores y genera firma digital.
+     *
+     * @return bool True si se creó exitosamente, false en caso contrario
      */
     public function crear()
     {
@@ -58,6 +116,8 @@ class Cargo
 
     /**
      * Desactiva todos los cargos existentes para un colaborador específico.
+     *
+     * @return void
      */
     private function desactivarCargosAnteriores()
     {
@@ -69,6 +129,10 @@ class Cargo
 
     /**
      * Genera una firma digital para una cadena de datos usando la clave privada.
+     *
+     * @param string $datos Cadena de datos a firmar
+     * @return string Firma digital en formato Base64
+     * @throws Exception Si no se puede cargar la clave privada
      */
     private function generarFirma($datos)
     {
@@ -93,6 +157,9 @@ class Cargo
 
     /**
      * Lista todos los cargos de un colaborador específico.
+     *
+     * @param int $colaborador_id ID del colaborador
+     * @return array Array con los cargos del colaborador incluyendo datos del departamento
      */
     public static function listarPorColaborador($colaborador_id)
     {
@@ -117,8 +184,9 @@ class Cargo
     /**
      * Verifica la integridad de los datos de un cargo usando su firma digital.
      *
-     * @param array $cargo Un array asociativo con los datos del cargo.
-     * @return bool True si la firma es válida, false si no lo es o si falta algún dato.
+     * @param array $cargo Array asociativo con los datos del cargo
+     * @return bool True si la firma es válida, false si no lo es o si falta algún dato
+     * @throws Exception Si no se puede cargar la clave pública
      */
     public static function verificarIntegridad($cargo)
     {
@@ -153,6 +221,9 @@ class Cargo
 
     /**
      * Encuentra la primera fecha de contratación de un colaborador.
+     *
+     * @param int $colaborador_id ID del colaborador
+     * @return string|null Fecha de primera contratación (YYYY-MM-DD) o null si no se encuentra
      */
     public static function obtenerPrimeraContratacion($colaborador_id)
     {

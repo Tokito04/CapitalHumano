@@ -6,10 +6,24 @@ use App\Models\Colaborador;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+
+/**
+ * Clase ReporteController
+ *
+ * Controlador que maneja la generación de reportes del sistema de Capital Humano.
+ * Incluye visualización de datos y exportación a Excel.
+ *
+ * @package App\Controllers
+ * @author Tu Nombre
+ * @version 1.0
+ */
 class ReporteController
 {
     /**
      * Muestra el reporte principal de colaboradores y sus sueldos.
+     * Incluye filtros de búsqueda y paginación.
+     *
+     * @return void Carga la vista del reporte con los datos filtrados y paginados
      */
     public function colaboradores()
     {
@@ -35,6 +49,9 @@ class ReporteController
 
     /**
      * Exporta el reporte de colaboradores a un archivo Excel.
+     * Aplica los mismos filtros que el reporte en pantalla.
+     *
+     * @return void Genera y descarga un archivo Excel con los datos
      */
     public function exportarColaboradores()
     {

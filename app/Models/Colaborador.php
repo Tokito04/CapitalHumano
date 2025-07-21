@@ -6,28 +6,107 @@ use App\Config\Database;
 use PDO;
 use PDOException;
 
+/**
+ * Clase Colaborador
+ *
+ * Modelo que representa a un colaborador en el sistema de Capital Humano.
+ * Maneja todas las operaciones CRUD relacionadas con los colaboradores.
+ *
+ * @package App\Models
+ * @author Tu Nombre
+ * @version 1.0
+ */
 class Colaborador
 {
+    /**
+     * @var PDO Conexión a la base de datos
+     */
     private $conn;
+
+    /**
+     * @var string Nombre de la tabla en la base de datos
+     */
     private $table = 'colaboradores';
 
-// Propiedades del Colaborador basadas en la rúbrica
+    /**
+     * @var int|null ID único del colaborador
+     */
     public $id;
+
+    /**
+     * @var string Primer nombre del colaborador
+     */
     public $primer_nombre;
+
+    /**
+     * @var string|null Segundo nombre del colaborador
+     */
     public $segundo_nombre;
+
+    /**
+     * @var string Primer apellido del colaborador
+     */
     public $primer_apellido;
+
+    /**
+     * @var string|null Segundo apellido del colaborador
+     */
     public $segundo_apellido;
+
+    /**
+     * @var string Sexo del colaborador (M/F)
+     */
     public $sexo;
+
+    /**
+     * @var string Número de identificación del colaborador
+     */
     public $identificacion;
+
+    /**
+     * @var string Fecha de nacimiento del colaborador (YYYY-MM-DD)
+     */
     public $fecha_nacimiento;
+
+    /**
+     * @var string|null Nombre del archivo de foto de perfil
+     */
     public $foto_perfil;
+
+    /**
+     * @var string Correo personal del colaborador
+     */
     public $correo_personal;
+
+    /**
+     * @var string|null Número de teléfono del colaborador
+     */
     public $telefono;
+
+    /**
+     * @var string|null Número de celular del colaborador
+     */
     public $celular;
+
+    /**
+     * @var string|null Dirección del colaborador
+     */
     public $direccion;
+
+    /**
+     * @var string Estatus del colaborador (activo/inactivo)
+     */
     public $estatus;
+
+    /**
+     * @var string|null Nombre del archivo PDF del historial académico
+     */
     public $historial_academico_pdf;
 
+    /**
+     * Constructor de la clase Colaborador.
+     * Inicializa la conexión a la base de datos.
+     */
     public function __construct()
     {
         $this->conn = Database::getInstance()->getConnection();
@@ -39,6 +118,10 @@ class Colaborador
     /**
      * Obtiene los colaboradores de forma paginada.
      * También devuelve el total de registros activos.
+     *
+     * @param int $limit Número de registros por página
+     * @param int $offset Desplazamiento para la paginación
+     * @return array Array con 'resultados' y 'total' de registros
      */
     public static function listarTodos($limit = 10, $offset = 0)
     {
@@ -63,6 +146,9 @@ class Colaborador
 
     /**
      * Crea un nuevo colaborador en la base de datos.
+     *
+     * @return bool True si se creó exitosamente, false en caso contrario
+     * @throws PDOException Si hay un error en la base de datos
      */
     public function crear()
     {
@@ -94,6 +180,9 @@ class Colaborador
 
     /**
      * Actualiza un colaborador existente en la base de datos.
+     *
+     * @return bool True si se actualizó exitosamente, false en caso contrario
+     * @throws PDOException Si hay un error en la base de datos
      */
     public function actualizar()
     {
@@ -154,6 +243,9 @@ class Colaborador
 
     /**
      * Busca un colaborador por su ID.
+     *
+     * @param int $id ID del colaborador a buscar
+     * @return array|false Array con los datos del colaborador o false si no se encuentra
      */
     public static function findById($id)
     {
@@ -168,6 +260,10 @@ class Colaborador
 
     /**
      * Cambia el estado de un colaborador (activo/inactivo).
+     *
+     * @param int $id ID del colaborador
+     * @param bool $nuevo_estado Nuevo estado del colaborador (true=activo, false=inactivo)
+     * @return bool True si se actualizó exitosamente, false en caso contrario
      */
     public static function cambiarEstado($id, $nuevo_estado)
     {
@@ -186,7 +282,12 @@ class Colaborador
 
     /**
      * Obtiene una lista de todos los colaboradores con los datos de su cargo activo.
-     * Ideal para reportes.
+     * Ideal para reportes con filtros personalizados.
+     *
+     * @param array $filtros Array de filtros opcionales (busqueda, sexo, salario_min)
+     * @param int $limit Número de registros por página
+     * @param int $offset Desplazamiento para la paginación
+     * @return array Array con 'resultados' y 'total' de registros
      */
     public static function listarParaReporte($filtros = [], $limit = 10, $offset = 0)
     {
@@ -256,6 +357,8 @@ class Colaborador
 
     /**
      * Cuenta el total de colaboradores activos agrupados por sexo.
+     *
+     * @return array Array con el conteo por sexo
      */
     public static function contarPorSexo()
     {
@@ -268,6 +371,8 @@ class Colaborador
 
     /**
      * Cuenta el total de colaboradores activos agrupados por rangos de edad.
+     *
+     * @return array Array con el conteo por rangos de edad
      */
     public static function contarPorRangoEdad()
     {
@@ -296,6 +401,8 @@ class Colaborador
     /**
      * Cuenta el total de colaboradores activos agrupados por dirección.
      * Limita los resultados a las 10 direcciones más comunes para claridad.
+     *
+     * @return array Array con el conteo por dirección
      */
     public static function contarPorDireccion()
     {
@@ -312,6 +419,12 @@ class Colaborador
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    /**
+     * Cuenta el total de departamentos en la base de datos.
+     *
+     * @return array Array con el total de departamentos
+     */
     public static function contarPorDepartamento()
     {
         $db = Database::getInstance()->getConnection();
@@ -321,5 +434,5 @@ class Colaborador
         $stmt = $db->prepare($query);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
+    }
 }

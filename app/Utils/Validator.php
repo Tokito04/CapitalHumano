@@ -2,6 +2,16 @@
 
 namespace App\Utils;
 
+/**
+ * Clase Validator
+ *
+ * Proporciona métodos estáticos para validar y sanitizar datos de entrada
+ * en la aplicación de Capital Humano.
+ *
+ * @package App\Utils
+ * @author Tu Nombre
+ * @version 1.0
+ */
 class Validator
 {
     /**
@@ -50,18 +60,23 @@ class Validator
         return filter_var(trim($email), FILTER_SANITIZE_EMAIL);
     }
 
+    /**
+     * Sanitiza una cadena permitiendo solo caracteres alfanuméricos y algunos especiales.
+     *
+     * @param string $data El dato a sanitizar.
+     * @return string El dato sanitizado.
+     */
     public static function sanitizeAlphaNumeric($data)
     {
-        // Elimina todo excepto letras, números y el guión
-        return preg_replace('/[^a-zA-Z0-9-]/', '', $data);
+        // Permitir letras, números, espacios, guiones y algunos caracteres especiales
+        return preg_replace('/[^a-zA-Z0-9\s\-_.]/', '', trim($data));
     }
 
     /**
-     * Valida si una cadena tiene el formato de una cédula panameña.
-     * Ej: 8-123-456, PE-123-456, N-123-456, E-123-456
+     * Valida el formato de una cédula panameña.
      *
      * @param string $cedula La cédula a validar.
-     * @return bool True si el formato es válido, false si no.
+     * @return bool True si la cédula es válida, false si no.
      */
     public static function validatePanamanianID($cedula)
     {

@@ -5,19 +5,62 @@ namespace App\Models;
 use App\config\Database;
 use PDO;
 
+/**
+ * Clase Usuario
+ *
+ * Modelo que representa a un usuario del sistema de Capital Humano.
+ * Maneja autenticación, registro y operaciones CRUD de usuarios.
+ *
+ * @package App\Models
+ * @author Tu Nombre
+ * @version 1.0
+ */
 class Usuario
 {
+    /**
+     * @var PDO Conexión a la base de datos
+     */
     private $conn;
+
+    /**
+     * @var string Nombre de la tabla en la base de datos
+     */
     private $table = 'usuarios';
 
-    // Propiedades del objeto
+    /**
+     * @var int|null ID único del usuario
+     */
     public $id;
+
+    /**
+     * @var string Nombre del usuario
+     */
     public $nombre;
+
+    /**
+     * @var string Email del usuario
+     */
     public $email;
+
+    /**
+     * @var string Hash de la contraseña del usuario
+     */
     public $password_hash;
+
+    /**
+     * @var bool Estado del usuario (activo/inactivo)
+     */
     public $activo;
+
+    /**
+     * @var int ID del rol del usuario
+     */
     public $rol_id;
 
+    /**
+     * Constructor de la clase Usuario.
+     * Inicializa la conexión a la base de datos.
+     */
     public function __construct()
     {
         // Obtiene la conexión de la base de datos usando el Singleton
@@ -27,6 +70,8 @@ class Usuario
     /**
      * Crea un nuevo usuario en la base de datos.
      * Hashea la contraseña antes de guardarla.
+     *
+     * @return bool True si se creó exitosamente, false en caso contrario
      */
     public function crear()
     {
@@ -61,6 +106,9 @@ class Usuario
     /**
      * Busca un usuario por su email.
      * Útil para el proceso de login.
+     *
+     * @param string $email Email del usuario a buscar
+     * @return array|false Array con los datos del usuario o false si no se encuentra
      */
     public static function findByEmail($email)
     {
@@ -75,6 +123,9 @@ class Usuario
 
     /**
      * Obtiene todos los usuarios administrativos de la base de datos.
+     * Incluye información del rol mediante JOIN.
+     *
+     * @return array Array con todos los usuarios y sus roles
      */
     public static function listarTodos()
     {
@@ -88,6 +139,9 @@ class Usuario
 
     /**
      * Actualiza un usuario existente en la base de datos.
+     * No actualiza la contraseña, solo datos básicos.
+     *
+     * @return bool True si se actualizó exitosamente, false en caso contrario
      */
     public function actualizar()
     {
@@ -111,6 +165,9 @@ class Usuario
     /**
      * Busca un usuario por su ID.
      * Útil para mostrar el formulario de edición.
+     *
+     * @param int $id ID del usuario a buscar
+     * @return array|false Array con los datos del usuario o false si no se encuentra
      */
     public static function findById($id)
     {

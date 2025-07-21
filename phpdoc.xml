@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<phpdoc>
+    <title>Documentación Técnica - Capital Humano</title>
+    <parser>
+        <target>docs/api</target>
+    </parser>
+    <transformer>
+        <target>docs/api</target>
+    </transformer>
+    <files>
+        <!-- Directorio principal con la lógica de la aplicación -->
+        <directory>app</directory>
+
+        <!-- Incluimos el directorio public para documentar el index.php -->
+        <directory>public</directory>
+
+        <!-- Ignoramos explícitamente las carpetas que no queremos documentar -->
+        <ignore>vendor/*</ignore>
+        <ignore>public/css/*</ignore>
+        <ignore>public/uploads/*</ignore>
+        <ignore>keys/*</ignore>
+    </files>
+</phpdoc>

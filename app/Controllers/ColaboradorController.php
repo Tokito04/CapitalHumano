@@ -5,10 +5,23 @@ namespace App\Controllers;
 use App\Models\Colaborador;
 use App\Models\Cargo;
 use App\Utils\Validator;
+
+/**
+ * Clase ColaboradorController
+ *
+ * Controlador que maneja todas las operaciones relacionadas con los colaboradores.
+ * Incluye funcionalidades de CRUD, validaciones y manejo de archivos.
+ *
+ * @package App\Controllers
+ * @author Tu Nombre
+ * @version 1.0
+ */
 class ColaboradorController
 {
     /**
-     * Muestra la lista de todos los colaboradores.
+     * Muestra la lista de todos los colaboradores con paginación.
+     *
+     * @return void Carga la vista con la lista paginada de colaboradores
      */
     public function index()
     {
@@ -29,6 +42,8 @@ class ColaboradorController
 
     /**
      * Muestra el formulario para crear un nuevo colaborador.
+     *
+     * @return void Carga la vista del formulario de creación
      */
     public function showCreateForm()
     {
@@ -37,6 +52,9 @@ class ColaboradorController
 
     /**
      * Muestra el formulario para editar un colaborador existente.
+     *
+     * @return void Carga la vista del formulario de edición con los datos del colaborador
+     * @throws Exception Si el colaborador no se encuentra
      */
     public function showEditForm()
     {
@@ -55,7 +73,10 @@ class ColaboradorController
     }
 
     /**
-     * Procesa la actualización de un colaborador.
+     * Procesa la actualización de un colaborador existente.
+     * Incluye validación de datos y manejo de archivos (foto y PDF).
+     *
+     * @return void Redirige según el resultado de la operación
      */
     public function update()
     {
@@ -136,6 +157,9 @@ class ColaboradorController
 
     /**
      * Almacena un nuevo colaborador en la base de datos.
+     * Incluye validación de datos y manejo de archivos (foto y PDF).
+     *
+     * @return void Redirige según el resultado de la operación
      */
     public function store()
     {

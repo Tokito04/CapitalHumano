@@ -2,18 +2,35 @@
 
 namespace App\Helpers;
 
+/**
+ * Clase AuthHelper
+ *
+ * Helper que proporciona funcionalidades de autenticación y autorización
+ * para el sistema de Capital Humano. Maneja verificación de permisos por roles.
+ *
+ * @package App\Helpers
+ * @author Tu Nombre
+ * @version 1.0
+ */
 class AuthHelper
 {
-    // Definimos los roles como constantes para evitar errores de tipeo.
-    // Asumimos que 1 = Administrador, 2 = Consulta.
+    /**
+     * Rol de Administrador - Acceso completo al sistema
+     */
     const ROL_ADMINISTRADOR = 1;
+
+    /**
+     * Rol de Consulta - Solo acceso de lectura
+     */
     const ROL_CONSULTA = 2;
 
     /**
      * Verifica si el usuario actual tiene el rol requerido.
-     * Si no, lo redirige al dashboard.
+     * Si no tiene permisos, redirige al dashboard.
+     * Si no está autenticado, redirige al login.
      *
-     * @param int $rolRequerido El ID del rol necesario para acceder.
+     * @param int $rolRequerido El ID del rol necesario para acceder
+     * @return void
      */
     public static function verificarPermiso($rolRequerido)
     {

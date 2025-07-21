@@ -4,12 +4,28 @@ namespace App\Controllers\Api;
 
 use App\Models\Colaborador;
 
+/**
+ * Clase ApiController
+ *
+ * Controlador que proporciona endpoints de API REST para consultas externas
+ * del sistema de Capital Humano. Incluye autenticación por API Key.
+ *
+ * @package App\Controllers\Api
+ * @author Tu Nombre
+ * @version 1.0
+ */
 class ApiController
 {
-    const API_KEY_CONTRALORIA = 'CONT-123-XYZ'; // Clave secreta de ejemplo
+    /**
+     * Clave API de ejemplo para la Contraloría
+     */
+    const API_KEY_CONTRALORIA = 'CONT-123-XYZ';
 
     /**
      * Devuelve las estadísticas de colaboradores por sexo.
+     * Requiere autenticación mediante API Key.
+     *
+     * @return void Devuelve respuesta JSON con estadísticas por sexo
      */
     public function estadisticasSexo()
     {
@@ -44,6 +60,9 @@ class ApiController
 
     /**
      * Cuenta el total de colaboradores activos agrupados por rangos de edad.
+     * Método estático para uso interno.
+     *
+     * @return array Array con el conteo por rangos de edad
      */
     public static function contarPorRangoEdad()
     {
@@ -72,6 +91,8 @@ class ApiController
     /**
      * Cuenta el total de colaboradores activos agrupados por dirección.
      * Limita los resultados a las 10 direcciones más comunes para claridad.
+     *
+     * @return array Array con el conteo por dirección
      */
     public static function contarPorDireccion()
     {
@@ -91,6 +112,9 @@ class ApiController
 
     /**
      * Devuelve un conjunto completo de estadísticas para los gráficos del dashboard.
+     * Requiere autenticación mediante API Key.
+     *
+     * @return void Devuelve respuesta JSON con todas las estadísticas del sistema
      */
     public function estadisticasGenerales()
     {
