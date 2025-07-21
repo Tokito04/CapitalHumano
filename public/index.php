@@ -39,7 +39,7 @@ $method = $_SERVER['REQUEST_METHOD'];
 switch ($request_uri) {
     case '/':
         echo 'Página de Inicio';
-        header('Location:'.BASE_PATH. '/login');
+        header('Location:'.BASE_PATH. '/dashboard');
         break;
 
     case '/login':
