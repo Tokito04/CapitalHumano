@@ -15,6 +15,7 @@
     <?php endif; ?>
     <a href="<?php echo BASE_PATH; ?>/colaboradores">Colaboradores</a>
     <a href="<?php echo BASE_PATH; ?>/reportes/colaboradores" class="active">Reportes</a>
+    <a href="https://tokito04.github.io/CapitalHumano/" target="_blank" class="right">Documentación</a>
     <a href="<?php echo BASE_PATH; ?>/logout" class="right">Cerrar Sesión</a>
 </div>
 <?php endif; ?>
