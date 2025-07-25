@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CopilotDiffPersistence">
+    <option name="pendingDiffs">
+      <map>
+        <entry key="$PROJECT_DIR$/docs/index.html">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="$PROJECT_DIR$/docs/index.html" />
+              <option name="originalContent" value="&lt;!DOCTYPE html&gt;&#10;&lt;html lang=&quot;en&quot;&gt;&#10;&lt;head&gt;&#10;    &lt;meta charset=&quot;utf-8&quot;&gt;&#10;            &lt;title&gt;Documentación Técnica - Capital Humano&lt;/title&gt;&#10;&#10;    &lt;/head&gt;&#10;&lt;body id=&quot;top&quot;&gt;&#10;&lt;/body&gt;&#10;&#10;&lt;/html&gt;&#10;" />
+              <option name="updatedContent" value="&lt;!DOCTYPE html&gt;&#10;&lt;html lang=&quot;en&quot;&gt;&#10;&lt;head&gt;&#10;    &lt;meta charset=&quot;utf-8&quot;&gt;&#10;    &lt;title&gt;Documentación Técnica - Capital Humano&lt;/title&gt;&#10;    &lt;meta http-equiv=&quot;refresh&quot; content=&quot;0; url=./api/index.html&quot;&gt;&#10;    &lt;script&gt;&#10;        window.location.href = &quot;./api/index.html&quot;;&#10;    &lt;/script&gt;&#10;&lt;/head&gt;&#10;&lt;body id=&quot;top&quot;&gt;&#10;    &lt;p&gt;Redirigiendo a la documentación de la API...&lt;/p&gt;&#10;    &lt;p&gt;Si no eres redirigido automáticamente, &lt;a href=&quot;./api/index.html&quot;&gt;haz clic aquí&lt;/a&gt;.&lt;/p&gt;&#10;&lt;/body&gt;&#10;&lt;/html&gt;" />
+            </PendingDiffInfo>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>

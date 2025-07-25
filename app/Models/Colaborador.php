@@ -152,7 +152,7 @@ class Colaborador
      */
     public function crear()
     {
-        $query = 'INSERT INTO ' . $this->table . ' (primer_nombre, segundo_nombre, primer_apellido, segundo_apellido, sexo, identificacion, fecha_nacimiento, foto_perfil, correo_personal, telefono, celular, direccion, historial_academico_pdf) VALUES (:primer_nombre, :segundo_nombre, :primer_apellido, :segundo_apellido, :sexo, :identificacion, :fecha_nacimiento, :foto_perfil, :correo_personal, :telefono, :celular, :direccion, :historial_academico_pdf)';
+        $query = 'INSERT INTO ' . $this->table . ' (primer_nombre, segundo_nombre, primer_apellido, segundo_apellido, sexo, identificacion, fecha_nacimiento, foto_perfil, correo_personal, telefono, celular, direccion,) VALUES (:primer_nombre, :segundo_nombre, :primer_apellido, :segundo_apellido, :sexo, :identificacion, :fecha_nacimiento, :foto_perfil, :correo_personal, :telefono, :celular, :direccion)';
 
         $stmt = $this->conn->prepare($query);
 
@@ -163,7 +163,6 @@ class Colaborador
         $stmt->bindParam(':primer_apellido', $this->primer_apellido);
         $stmt->bindParam(':segundo_apellido', $this->segundo_apellido);
         $stmt->bindParam(':sexo', $this->sexo);
-        $stmt->bindParam(':historial_academico_pdf', $this->historial_academico_pdf);
         $stmt->bindParam(':identificacion', $this->identificacion);
         $stmt->bindParam(':fecha_nacimiento', $this->fecha_nacimiento);
         $stmt->bindParam(':foto_perfil', $this->foto_perfil);
@@ -197,6 +196,7 @@ class Colaborador
                     identificacion = :identificacion, 
                     fecha_nacimiento = :fecha_nacimiento, 
                     foto_perfil = :foto_perfil,
+                    historial_academico_pdf = :historial_academico_pdf,
                     correo_personal = :correo_personal, 
                     telefono = :telefono, 
                     celular = :celular, 
@@ -215,6 +215,7 @@ class Colaborador
             $stmt->bindParam(':identificacion', $this->identificacion);
             $stmt->bindParam(':fecha_nacimiento', $this->fecha_nacimiento);
             $stmt->bindParam(':foto_perfil', $this->foto_perfil);
+            $stmt->bindParam(':historial_academico_pdf', $this->historial_academico_pdf);
             $stmt->bindParam(':correo_personal', $this->correo_personal);
             $stmt->bindParam(':telefono', $this->telefono);
             $stmt->bindParam(':celular', $this->celular);
@@ -245,7 +246,7 @@ class Colaborador
      * Busca un colaborador por su ID.
      *
      * @param int $id ID del colaborador a buscar
-     * @return array|false Array con los datos del colaborador o false si no se encuentra
+     * @return array|false Array con los datos del colaborador o, false si no se encuentra
      */
     public static function findById($id)
     {
@@ -258,27 +259,6 @@ class Colaborador
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    /**
-     * Cambia el estado de un colaborador (activo/inactivo).
-     *
-     * @param int $id ID del colaborador
-     * @param bool $nuevo_estado Nuevo estado del colaborador (true=activo, false=inactivo)
-     * @return bool True si se actualizó exitosamente, false en caso contrario
-     */
-    public static function cambiarEstado($id, $nuevo_estado)
-    {
-        $db = Database::getInstance()->getConnection();
-        $query = 'UPDATE colaboradores SET activo = :activo WHERE id = :id';
-        $stmt = $db->prepare($query);
-
-        $stmt->bindParam(':activo', $nuevo_estado, PDO::PARAM_BOOL);
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-
-        if ($stmt->execute()) {
-            return true;
-        }
-        return false;
-    }
 
     /**
      * Obtiene una lista de todos los colaboradores con los datos de su cargo activo.
@@ -336,14 +316,14 @@ class Colaborador
         // Vincular todos los parámetros
         foreach ($params_paginados as $key => &$val) {
             if(is_int($val)) {
-                $stmt_datos->bindParam($key, $val, \PDO::PARAM_INT);
+                $stmt_datos->bindParam($key, $val, PDO::PARAM_INT);
             } else {
                 $stmt_datos->bindParam($key, $val);
             }
         }
 
         $stmt_datos->execute();
-        $resultados = $stmt_datos->fetchAll(\PDO::FETCH_ASSOC);
+        $resultados = $stmt_datos->fetchAll(PDO::FETCH_ASSOC);
 
         // 4. Consulta para contar el total de filas (con los mismos filtros)
         $query_total = 'SELECT COUNT(c.id) ' . $query_base . $query_filtros;

@@ -131,11 +131,6 @@ Search.appendIndex(
             "summary": "Almacena\u0020un\u0020nuevo\u0020colaborador\u0020en\u0020la\u0020base\u0020de\u0020datos.",
             "url": "classes/App-Controllers-ColaboradorController.html#method_store"
         },                {
-            "fqsen": "\\App\\Controllers\\ColaboradorController\u003A\u003AtoggleStatus\u0028\u0029",
-            "name": "toggleStatus",
-            "summary": "Cambia\u0020el\u0020estado\u0020de\u0020un\u0020colaborador\u0020de\u0020activo\u0020a\u0020inactivo\u0020y\u0020viceversa.",
-            "url": "classes/App-Controllers-ColaboradorController.html#method_toggleStatus"
-        },                {
             "fqsen": "\\App\\Controllers\\ErrorController",
             "name": "ErrorController",
             "summary": "Controlador\u0020para\u0020manejar\u0020y\u0020mostrar\u0020p\u00E1ginas\u0020de\u0020error\u0020personalizadas.",
@@ -380,11 +375,6 @@ Search.appendIndex(
             "name": "findById",
             "summary": "Busca\u0020un\u0020colaborador\u0020por\u0020su\u0020ID.",
             "url": "classes/App-Models-Colaborador.html#method_findById"
-        },                {
-            "fqsen": "\\App\\Models\\Colaborador\u003A\u003AcambiarEstado\u0028\u0029",
-            "name": "cambiarEstado",
-            "summary": "Cambia\u0020el\u0020estado\u0020de\u0020un\u0020colaborador\u0020\u0028activo\/inactivo\u0029.",
-            "url": "classes/App-Models-Colaborador.html#method_cambiarEstado"
         },                {
             "fqsen": "\\App\\Models\\Colaborador\u003A\u003AlistarParaReporte\u0028\u0029",
             "name": "listarParaReporte",

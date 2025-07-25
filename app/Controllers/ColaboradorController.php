@@ -80,17 +80,19 @@ class ColaboradorController
      */
     public function update()
     {
+
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $errors = [];
 
             // 1. Validar Datos
             if (!Validator::validateRequired($_POST['primer_nombre'])) $errors[] = "El primer nombre es obligatorio.";
             if (!Validator::validateRequired($_POST['primer_apellido'])) $errors[] = "El primer apellido es obligatorio.";
-
+            if (!Validator::validateRequired($_POST['identificacion'])) $errors[] = "La identificación es obligatoria.";
+            if (!Validator::validateRequired($_POST['fecha_nacimiento'])) $errors[] = "La fecha de nacimiento es obligatoria.";
+            if (!Validator::validateRequired($_POST['correo_personal'])) $errors[] = "El correo electrónico es obligatorio.";
+            if (!Validator::validateEmail($_POST['correo_personal'])) $errors[] = "El formato del correo electrónico no es válido.";
             $identificacion_sanitizada = Validator::sanitizeAlphaNumeric($_POST['identificacion']);
             if (!Validator::validatePanamanianID($identificacion_sanitizada)) $errors[] = "El formato de la identificación no es válido.";
-
-            // Añadir más validaciones si es necesario...
 
             // 2. Si hay errores, redirigir de vuelta
             if (!empty($errors)) {
@@ -104,11 +106,19 @@ class ColaboradorController
 
             // ¡¡ESTA ES LA PARTE MÁS IMPORTANTE!!
             $colaborador->id = $_POST['id']; // Asignamos el ID desde el POST
-
             $colaborador->primer_nombre = Validator::sanitizeString($_POST['primer_nombre']);
-            $colaborador->segundo_nombre = Validator::sanitizeString($_POST['segundo_nombre']);
+            if (isset($_POST['segundo_nombre'])) {
+                $colaborador->segundo_nombre = Validator::sanitizeString($_POST['segundo_nombre']);
+            } else {
+                $colaborador->segundo_nombre = null; // O un valor por defecto
+            }
             $colaborador->primer_apellido = Validator::sanitizeString($_POST['primer_apellido']);
-            $colaborador->segundo_apellido = Validator::sanitizeString($_POST['segundo_apellido']);
+
+            if (isset($_POST['segundo_apellido'])) {
+                $colaborador->segundo_apellido = Validator::sanitizeString($_POST['segundo_apellido']);
+            } else {
+                $colaborador->segundo_apellido = null; // O un valor por defecto
+            }
             $colaborador->sexo = $_POST['sexo'];
             $colaborador->identificacion = $identificacion_sanitizada;
             $colaborador->fecha_nacimiento = $_POST['fecha_nacimiento'];
@@ -130,7 +140,6 @@ class ColaboradorController
                 $datos_actuales = Colaborador::findById($_POST['id']);
                 $colaborador->foto_perfil = $datos_actuales['foto_perfil'];
             }
-
             // Inicio Lógica de Historial Académico
             if (isset($_FILES['historial_academico_pdf']) && $_FILES['historial_academico_pdf']['error'] === UPLOAD_ERR_OK) {
                 $uploadDirPdf = __DIR__ . '/../../public/uploads/pdf/';
@@ -149,8 +158,10 @@ class ColaboradorController
                 header('Location: ' . BASE_PATH . '/colaboradores');
                 exit();
             } else {
-                // Este es el error que veías antes
-                die("Error final: El modelo recibió los datos pero no pudo actualizar la base de datos.");
+                // Si la actualización falla, podríamos redirigir de vuelta con un mensaje de error
+                $_SESSION['errors'] = ["Error al actualizar el colaborador."];
+                header('Location: ' . BASE_PATH . '/colaboradores/editar?id=' . $_POST['id']);
+                exit();
             }
         }
     }
@@ -235,25 +246,12 @@ class ColaboradorController
             if ($colaborador->crear()) {
                 header('Location: ' . BASE_PATH . '/colaboradores');
                 exit();
+            } else {
+                // Si la actualización falla, podríamos redirigir de vuelta con un mensaje de error
+                $_SESSION['errors'] = ["Error al crear el colaborador."];
+                header('Location: ' . BASE_PATH . '/colaboradores/crear');
+                exit();
             }
-        }
-    }
-    /**
-     * Cambia el estado de un colaborador de activo a inactivo y viceversa.
-     */
-    public function toggleStatus()
-    {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $id = $_POST['id'];
-            $estado_actual = (bool)$_POST['estado_actual'];
-
-            // Invierte el estado
-            $nuevo_estado = !$estado_actual;
-
-            Colaborador::cambiarEstado($id, $nuevo_estado);
-
-            header('Location: ' . BASE_PATH . '/colaboradores');
-            exit();
         }
     }
 }

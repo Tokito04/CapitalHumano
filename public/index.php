@@ -123,14 +123,7 @@ switch ($request_uri) {
         }
         break;
 
-    case '/colaboradores/status':
-        if (!isset($_SESSION['user_id'])) { header('Location: ' . BASE_PATH . '/login'); exit(); }
 
-        if ($method === 'POST') {
-            $controller = new ColaboradorController();
-            $controller->toggleStatus();
-        }
-        break;
 
     case '/cargos/crear':
         AuthHelper::verificarPermiso(AuthHelper::ROL_ADMINISTRADOR);
