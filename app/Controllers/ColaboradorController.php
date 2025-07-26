@@ -237,6 +237,17 @@ class ColaboradorController
                     $colaborador->foto_perfil = null; // O manejar el error
                 }
             }
+            if (isset($_FILES['historial_academico_pdf']) && $_FILES['historial_academico_pdf']['error'] === UPLOAD_ERR_OK) {
+                $uploadDirPdf = __DIR__ . '/../../public/uploads/pdf/';
+                $fileNamePdf = uniqid() . '-' . basename($_FILES['historial_academico_pdf']['name']);
+                $targetFilePdf = $uploadDirPdf . $fileNamePdf;
+
+                if (move_uploaded_file($_FILES['historial_academico_pdf']['tmp_name'], $targetFilePdf)) {
+                    $colaborador->historial_academico_pdf = $fileNamePdf;
+                } else{
+                    $colaborador->historial_academico_pdf = null; // O manejar el error
+                }}
+            }
 
 
             $colaborador->correo_personal = Validator::sanitizeEmail($_POST['correo_personal']);
@@ -253,5 +264,5 @@ class ColaboradorController
                 exit();
             }
         }
-    }
+
 }

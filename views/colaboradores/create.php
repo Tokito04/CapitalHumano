@@ -90,12 +90,17 @@
                     <input type="text" id="celular" name="celular">
                 </div>
             </div>
-
+            <div class="form-grid">
             <div class="form-group">
                 <label for="foto_perfil">Foto de Perfil:</label>
                 <input type="file" id="foto_perfil" name="foto_perfil" accept="image/*">
             </div>
 
+            <div class="form-group">
+                <label for="historial_academico_pdf">Historial Académico (PDF):</label>
+                <input type="file" id="historial_academico_pdf" name="historial_academico_pdf" accept="application/pdf">
+            </div>
+            </div>
             <div class="form-group">
                 <label for="direccion">Dirección:</label>
                 <textarea id="direccion" name="direccion" placeholder="Ingrese la dirección completa..."></textarea>

@@ -596,6 +596,56 @@ Search.appendIndex(
             "summary": "",
             "url": "classes/App-Models-Usuario.html#property_rol_id"
         },                {
+            "fqsen": "\\App\\Models\\Vacacion",
+            "name": "Vacacion",
+            "summary": "Clase\u0020Vacacion",
+            "url": "classes/App-Models-Vacacion.html"
+        },                {
+            "fqsen": "\\App\\Models\\Vacacion\u003A\u003A__construct\u0028\u0029",
+            "name": "__construct",
+            "summary": "",
+            "url": "classes/App-Models-Vacacion.html#method___construct"
+        },                {
+            "fqsen": "\\App\\Models\\Vacacion\u003A\u003Acrear\u0028\u0029",
+            "name": "crear",
+            "summary": "Crea\u0020un\u0020nuevo\u0020registro\u0020de\u0020vacaciones\u0020en\u0020la\u0020base\u0020de\u0020datos.",
+            "url": "classes/App-Models-Vacacion.html#method_crear"
+        },                {
+            "fqsen": "\\App\\Models\\Vacacion\u003A\u003A\u0024conn",
+            "name": "conn",
+            "summary": "",
+            "url": "classes/App-Models-Vacacion.html#property_conn"
+        },                {
+            "fqsen": "\\App\\Models\\Vacacion\u003A\u003A\u0024table",
+            "name": "table",
+            "summary": "",
+            "url": "classes/App-Models-Vacacion.html#property_table"
+        },                {
+            "fqsen": "\\App\\Models\\Vacacion\u003A\u003A\u0024id",
+            "name": "id",
+            "summary": "",
+            "url": "classes/App-Models-Vacacion.html#property_id"
+        },                {
+            "fqsen": "\\App\\Models\\Vacacion\u003A\u003A\u0024colaborador_id",
+            "name": "colaborador_id",
+            "summary": "",
+            "url": "classes/App-Models-Vacacion.html#property_colaborador_id"
+        },                {
+            "fqsen": "\\App\\Models\\Vacacion\u003A\u003A\u0024fecha_resuelto",
+            "name": "fecha_resuelto",
+            "summary": "",
+            "url": "classes/App-Models-Vacacion.html#property_fecha_resuelto"
+        },                {
+            "fqsen": "\\App\\Models\\Vacacion\u003A\u003A\u0024dias_tomados",
+            "name": "dias_tomados",
+            "summary": "",
+            "url": "classes/App-Models-Vacacion.html#property_dias_tomados"
+        },                {
+            "fqsen": "\\App\\Models\\Vacacion\u003A\u003A\u0024documento_pdf_url",
+            "name": "documento_pdf_url",
+            "summary": "",
+            "url": "classes/App-Models-Vacacion.html#property_documento_pdf_url"
+        },                {
             "fqsen": "\\App\\Utils\\Validator",
             "name": "Validator",
             "summary": "Clase\u0020Validator",

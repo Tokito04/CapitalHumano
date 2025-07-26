@@ -29,7 +29,7 @@ class Colaborador
     private $table = 'colaboradores';
 
     /**
-     * @var int|null ID único del colaborador
+     * @var int|null id único del colaborador
      */
     public $id;
 
@@ -152,7 +152,7 @@ class Colaborador
      */
     public function crear()
     {
-        $query = 'INSERT INTO ' . $this->table . ' (primer_nombre, segundo_nombre, primer_apellido, segundo_apellido, sexo, identificacion, fecha_nacimiento, foto_perfil, correo_personal, telefono, celular, direccion,) VALUES (:primer_nombre, :segundo_nombre, :primer_apellido, :segundo_apellido, :sexo, :identificacion, :fecha_nacimiento, :foto_perfil, :correo_personal, :telefono, :celular, :direccion)';
+        $query = 'INSERT INTO ' . $this->table . ' (primer_nombre, segundo_nombre, primer_apellido, segundo_apellido, sexo, identificacion, fecha_nacimiento, foto_perfil, historial_academico_pdf, correo_personal, telefono, celular, direccion,) VALUES (:primer_nombre, :segundo_nombre, :primer_apellido, :segundo_apellido, :sexo, :identificacion, :fecha_nacimiento, :foto_perfil, :historial_academico_pdf, :correo_personal, :telefono, :celular, :direccion)';
 
         $stmt = $this->conn->prepare($query);
 
@@ -166,6 +166,7 @@ class Colaborador
         $stmt->bindParam(':identificacion', $this->identificacion);
         $stmt->bindParam(':fecha_nacimiento', $this->fecha_nacimiento);
         $stmt->bindParam(':foto_perfil', $this->foto_perfil);
+        $stmt->bindParam(':historial_academico_pdf', $this->historial_academico_pdf);
         $stmt->bindParam(':correo_personal', $this->correo_personal);
         $stmt->bindParam(':telefono', $this->telefono);
         $stmt->bindParam(':celular', $this->celular);
@@ -245,7 +246,7 @@ class Colaborador
     /**
      * Busca un colaborador por su ID.
      *
-     * @param int $id ID del colaborador a buscar
+     * @param int $id id del colaborador a buscar
      * @return array|false Array con los datos del colaborador o, false si no se encuentra
      */
     public static function findById($id)

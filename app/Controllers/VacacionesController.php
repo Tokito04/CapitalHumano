@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Models\Colaborador;
 use App\Models\Cargo;
+use App\Models\Vacacion;
 use DateTime;
 use Dompdf\Dompdf;
 use Dompdf\Options;
@@ -25,6 +26,7 @@ class VacacionesController
      * Calcula automáticamente los días de vacaciones ganados basado en días trabajados.
      *
      * @return void Carga la vista con los datos de vacaciones calculados
+     * @throws \Exception
      */
     public function index()
     {
@@ -64,28 +66,47 @@ class VacacionesController
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $colaborador_id = $_POST['colaborador_id'];
-            $dias_vacaciones = $_POST['dias_vacaciones'];
             $dias_a_tomar = $_POST['dias_a_tomar'];
 
             $colaborador = Colaborador::findById($colaborador_id);
             $cargo_actual = Cargo::listarPorColaborador($colaborador_id)[0] ?? null;
-
-            // Para que Dompdf pueda cargar imágenes y CSS, necesitamos configurar las opciones.
-            $options = new Options();
+            $dias_vacaciones = $_POST['dias_vacaciones'];
+            // --- Lógica para generar y guardar el PDF ---
+            $options = new \Dompdf\Options();
             $options->set('isRemoteEnabled', true);
-            $dompdf = new Dompdf($options);
+            $dompdf = new \Dompdf\Dompdf($options);
 
-            // Obtenemos el contenido del HTML que vamos a convertir.
             ob_start();
             require_once __DIR__ . '/../../views/vacaciones/plantilla_pdf.php';
             $html = ob_get_clean();
 
             $dompdf->loadHtml($html);
-            $dompdf->setPaper('letter', 'portrait'); // Tamaño carta, orientación vertical
+            $dompdf->setPaper('letter', 'portrait');
             $dompdf->render();
 
-            // Enviamos el PDF al navegador para que se muestre o descargue.
-            $dompdf->stream("Resuelto_Vacaciones_" . $colaborador['identificacion'] . ".pdf", ["Attachment" => false]);
+            // 1. Obtenemos el contenido del PDF renderizado
+            $output = $dompdf->output();
+
+            // 2. Definimos la ruta y un nombre de archivo único
+            $uploadDir = __DIR__ . '/../../public/uploads/vacaciones/';
+            $fileName = 'Resuelto-' . $colaborador['identificacion'] . '-' . uniqid() . '.pdf';
+            $filePath = $uploadDir . $fileName;
+
+            // 3. Guardamos el archivo en el servidor
+            file_put_contents($filePath, $output);
+
+            // 4. Creamos el registro en la base de datos
+            $vacacion = new Vacacion();
+            $vacacion->colaborador_id = $colaborador_id;
+            $vacacion->dias_tomados = $dias_a_tomar;
+            $vacacion->documento_pdf_url = $fileName; // Guardamos solo el nombre del archivo
+            $vacacion->crear();
+
+            // 5. Presentamos el archivo generado al usuario
+            header('Content-Type: application/pdf');
+            header('Content-Disposition: inline; filename="' . $fileName . '"');
+            header('Content-Length: ' . filesize($filePath));
+            readfile($filePath);
             exit();
         }
     }
