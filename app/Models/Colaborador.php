@@ -152,7 +152,7 @@ class Colaborador
      */
     public function crear()
     {
-        $query = 'INSERT INTO ' . $this->table . ' (primer_nombre, segundo_nombre, primer_apellido, segundo_apellido, sexo, identificacion, fecha_nacimiento, foto_perfil, historial_academico_pdf, correo_personal, telefono, celular, direccion,) VALUES (:primer_nombre, :segundo_nombre, :primer_apellido, :segundo_apellido, :sexo, :identificacion, :fecha_nacimiento, :foto_perfil, :historial_academico_pdf, :correo_personal, :telefono, :celular, :direccion)';
+        $query = 'INSERT INTO ' . $this->table . ' (primer_nombre, segundo_nombre, primer_apellido, segundo_apellido, sexo, identificacion, fecha_nacimiento, foto_perfil, historial_academico_pdf, correo_personal, telefono, celular, direccion) VALUES (:primer_nombre, :segundo_nombre, :primer_apellido, :segundo_apellido, :sexo, :identificacion, :fecha_nacimiento, :foto_perfil, :historial_academico_pdf, :correo_personal, :telefono, :celular, :direccion)';
 
         $stmt = $this->conn->prepare($query);
 
