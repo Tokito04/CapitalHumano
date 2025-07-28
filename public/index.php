@@ -52,6 +52,7 @@ switch ($request_uri) {
         break;
 
     case '/register':
+        AuthHelper::verificarPermiso(AuthHelper::ROL_ADMINISTRADOR);
         $controller = new UsuarioController();
         if ($method === 'GET') {
             $controller->showRegisterForm();
