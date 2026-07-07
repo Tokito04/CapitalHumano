@@ -1,4 +1,4 @@
-create database postgres;
+
 create table if not exists roles
 (
     id         serial
@@ -8,7 +8,7 @@ create table if not exists roles
     );
 
 alter table roles
-    owner to postgres;
+    owner to capital;
 
 create table if not exists colaboradores
 (
@@ -34,7 +34,7 @@ create table if not exists colaboradores
     );
 
 alter table colaboradores
-    owner to postgres;
+    owner to capital;
 
 create table if not exists vacaciones
 (
@@ -48,7 +48,7 @@ create table if not exists vacaciones
     );
 
 alter table vacaciones
-    owner to postgres;
+    owner to capital;
 
 create table if not exists departamentos
 (
@@ -59,7 +59,7 @@ create table if not exists departamentos
     );
 
 alter table departamentos
-    owner to postgres;
+    owner to capital;
 
 create table if not exists cargos
 (
@@ -80,7 +80,7 @@ create table if not exists cargos
     );
 
 alter table cargos
-    owner to postgres;
+    owner to capital;
 
 create table if not exists usuarios
 (
@@ -96,5 +96,5 @@ create table if not exists usuarios
     );
 
 alter table usuarios
-    owner to postgres;
+    owner to capital;
 

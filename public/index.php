@@ -6,9 +6,9 @@ session_start(); // Iniciamos sesión para usarla en el futuro
 require_once __DIR__ . '/../vendor/autoload.php';
 
 // Cargar las variables de entorno desde el archivo .env
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '\..\\');
+$dotenv = Dotenv\Dotenv::createImmutable(dirname(__DIR__));
 $dotenv->load();
-define('BASE_PATH', '/CapitalHumano/public');
+
 use App\Controllers\UsuarioController;
 use App\Controllers\ColaboradorController;
 use App\Controllers\CargoController;
@@ -18,7 +18,8 @@ use App\Controllers\Api\ApiController;
 use App\Helpers\AuthHelper;
 use App\Controllers\ErrorController;
 // --- INICIO DEL ROUTER MEJORADO ---
-$base_path = '/CapitalHumano/public'; // Define el subdirectorio de tu proyecto
+$base_path = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/');
+define('BASE_PATH', $base_path);
 $request_uri = $_SERVER['REQUEST_URI'];
 
 // Elimina el base_path de la URL solicitada
@@ -52,7 +53,7 @@ switch ($request_uri) {
         break;
 
     case '/register':
-        AuthHelper::verificarPermiso(AuthHelper::ROL_ADMINISTRADOR);
+    	AuthHelper::verificarPermiso(AuthHelper::ROL_ADMINISTRADOR);
         $controller = new UsuarioController();
         if ($method === 'GET') {
             $controller->showRegisterForm();
@@ -203,8 +204,15 @@ switch ($request_uri) {
         $controller->estadisticasGenerales();
         break;
 
+    case '/timer':
+        header('Location:' . BASE_PATH . '/timer.html');
+        exit();
+        break;
+
     default:
         $controller = new ErrorController();
         $controller->notFound();
         break;
+
+
 }

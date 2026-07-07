@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ASCII Timer OBS</title>
+<style>
+  /* ── URL params: ?color=ff4400&size=18&align=center&shadow=1&countdown=1&mm=5&ss=0 ── */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    background: transparent;  /* CLAVE para OBS: fondo transparente */
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+  }
+
+  #wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center; /* se puede cambiar via JS a flex-start/flex-end */
+    padding: 8px;
+    height: 100vh;
+  }
+
+  #display {
+    font-family: 'Courier New', Courier, monospace;
+    white-space: pre;
+    line-height: 1.15;
+    font-size: 14px;          /* se sobreescribe via param ?size= */
+    color: #00ff88;           /* se sobreescribe via param ?color= */
+    /* text-shadow opcional (activado con ?shadow=1) */
+    letter-spacing: 0.02em;
+    user-select: none;
+  }
+</style>
+</head>
+<body>
+<div id="wrap">
+  <pre id="display"></pre>
+</div>
+
+<script>
+// ─────────────────────────────────────────────
+// ANSI SHADOW font — cada dígito tiene 6 líneas
+// ─────────────────────────────────────────────
+const ANSI_SHADOW = {
+  '0': [
+"    █████   ",
+"  ███░░░███ ",
+" ███   ░░███",
+"░███    ░███",
+"░███    ░███",
+"░░███   ███ ",
+" ░░░█████░  ",
+"   ░░░░░░   "
+  ],
+  '1': [
+" ████ ",
+"░░███ ",
+" ░███ ",
+" ░███ ",
+" ░███ ",
+" ░███ ",
+" █████",
+"░░░░░ "
+  ],
+  '2': [
+"  ████████   ",
+" ███░░░░███  ",
+"░░░    ░███  ",
+"   ███████   ",
+"  ███░░░░    ",
+" ███      █  ",
+"░██████████  ",
+"░░░░░░░░░░   "
+  ],
+  '3': [
+"  ████████   ",
+" ███░░░░███  ",
+"░░░    ░███  ",
+"   ██████░   ",
+"  ░░░░░░███  ",
+" ███   ░███  ",
+"░░████████   ",
+" ░░░░░░░░    "
+  ],
+  '4': [
+" █████ █████ ",
+"░░███ ░░███  ",
+" ░███  ░███ █",
+" ░███████████",
+" ░░░░░░░███░█",
+"       ░███░ ",
+"       █████ ",
+"      ░░░░░  "
+  ],
+  '5': [
+" ██████████  ",
+"░███░░░░░░█  ",
+"░███     ░   ",
+"░█████████   ",
+"░░░░░░░░███  ",
+" ███   ░███  ",
+"░░████████   ",
+" ░░░░░░░░    "
+  ],
+  '6': [
+"  ████████   ",
+" ███░░░░███  ",
+"░███   ░░░   ",
+"░█████████   ",
+"░███░░░░███  ",
+"░███   ░███  ",
+"░░████████   ",
+" ░░░░░░░░    "
+  ],
+  '7': [
+" ██████████  ",
+"░███░░░░███  ",
+"░░░    ███   ",
+"      ███    ",
+"     ███     ",
+"    ███      ",
+"   ███       ",
+"  ░░░        "
+  ],
+  '8': [
+"  ████████   ",
+" ███░░░░███  ",
+"░███   ░███  ",
+"░░████████   ",
+" ███░░░░███  ",
+"░███   ░███  ",
+"░░████████   ",
+" ░░░░░░░░    "
+  ],
+  '9': [
+"  ████████   ",
+" ███░░░░███  ",
+"░███   ░███  ",
+"░░█████████  ",
+" ░░░░░░░███  ",
+" ███   ░███  ",
+"░░████████   ",
+" ░░░░░░░░    "
+  ],
+  // Separador ":" — parpadea
+  ':': [
+"   ",
+" ██",
+"░░ ",
+"   ",
+"   ",
+" ██",
+"░░ ",
+"   "
+  ],
+  // Separador vacío para el parpadeo
+  ' ': [
+    '   ',
+    '   ',
+    '   ',
+    '   ',
+    '   ',
+    '   ',
+    '   ',
+    '   '
+  ]
+};
+
+// ─────────────────────────────────────────────
+// Leer parámetros de la URL
+// ─────────────────────────────────────────────
+function param(name, fallback) {
+  const u = new URLSearchParams(window.location.search);
+  return u.has(name) ? u.get(name) : fallback;
+}
+
+const COLOR      = '#' + param('color', '00ff88');
+const SIZE       = parseFloat(param('size', '14'));
+const ALIGN      = param('align', 'center');   // center | left | right
+const SHADOW_ON  = param('shadow', '0') === '1';
+const COUNTDOWN  = param('countdown', '1') === '1'; // 1=cuenta atrás, 0=stopwatch
+const INIT_MM    = parseInt(param('mm', '5'));
+const INIT_SS    = parseInt(param('ss', '0'));
+
+// ─────────────────────────────────────────────
+// Aplicar estilos desde parámetros
+// ─────────────────────────────────────────────
+const el = document.getElementById('display');
+const wrap = document.getElementById('wrap');
+
+el.style.color    = COLOR;
+el.style.fontSize = SIZE + 'px';
+
+if (SHADOW_ON) {
+  // Glow suave del mismo color
+  el.style.textShadow = `0 0 8px ${COLOR}88, 0 0 20px ${COLOR}44`;
+}
+
+// Alineación horizontal
+const alignMap = { left: 'flex-start', center: 'center', right: 'flex-end' };
+wrap.style.justifyContent = alignMap[ALIGN] || 'center';
+
+// ─────────────────────────────────────────────
+// Renderizar dígitos ANSI Shadow
+// ─────────────────────────────────────────────
+function renderChars(chars) {
+  // Número de líneas por dígito: 6
+  const LINES = 8;
+  const rows = Array.from({ length: LINES }, () => '');
+
+  for (let i = 0; i < chars.length; i++) {
+    const ch = chars[i];
+    const glyph = ANSI_SHADOW[ch] || ANSI_SHADOW[' '];
+    for (let r = 0; r < LINES; r++) {
+      // Añadir un espacio de separación entre caracteres (excepto el primero)
+      rows[r] += (i > 0 ? ' ' : '') + glyph[r];
+    }
+  }
+  return rows.join('\n');
+}
+
+// ─────────────────────────────────────────────
+// Estado del temporizador
+// ─────────────────────────────────────────────
+let totalSeconds  = INIT_MM * 60 + INIT_SS;
+let remaining     = totalSeconds;
+let running       = false;
+let intervalId    = null;
+let blinkOn       = true;
+
+function pad2(n) { return String(n).padStart(2, '0'); }
+
+function render(blink) {
+  const m = Math.floor(remaining / 60);
+  const s = remaining % 60;
+  const sep = blink ? ':' : ' ';  // el ":" parpadea cada segundo
+  const chars = [...pad2(m), sep, ...pad2(s)];
+  el.textContent = renderChars(chars);
+}
+
+function tick() {
+  blinkOn = !blinkOn;
+
+  if (COUNTDOWN) {
+    if (remaining > 0) remaining--;
+    else {
+      // Tiempo agotado: parpadeo de ceros y detención
+      clearInterval(intervalId);
+      running = false;
+    }
+  } else {
+    // Modo stopwatch: cuenta hacia arriba
+    remaining++;
+  }
+
+  render(blinkOn);
+}
+
+// ─────────────────────────────────────────────
+// Control por teclado (cuando OBS no está en
+// modo de interacción, se usa la URL; pero
+// si el usuario abre el HTML en navegador,
+// puede controlarlo con teclas)
+// ─────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if (e.code === 'Space') {
+    e.preventDefault();
+    if (running) {
+      clearInterval(intervalId);
+      running = false;
+    } else {
+      intervalId = setInterval(tick, 1000);
+      running = true;
+    }
+  }
+  if (e.code === 'KeyR') {
+    clearInterval(intervalId);
+    running    = false;
+    remaining  = totalSeconds;
+    blinkOn    = true;
+    render(true);
+  }
+});
+
+// ─────────────────────────────────────────────
+// Arranque automático si se pasa ?autostart=1
+// ─────────────────────────────────────────────
+render(true);
+
+if (param('autostart', '0') === '1') {
+  intervalId = setInterval(tick, 1000);
+  running    = true;
+}
+</script>
+</body>
+</html>
