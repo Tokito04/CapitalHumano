@@ -35,15 +35,26 @@ class AuthHelper
     public static function verificarPermiso($rolRequerido)
     {
         // Primero, nos aseguramos de que el usuario haya iniciado sesión.
-        if (!isset($_SESSION['user_id'])) {
-            header('Location: ' . BASE_PATH . '/login');
-            exit();
-        }
+        self::exigirSesion();
 
         // Verificamos si el rol del usuario no es el requerido.
         if ($_SESSION['user_rol'] != $rolRequerido) {
             // Si no tiene permiso, lo enviamos al dashboard.
             header('Location: ' . BASE_PATH . '/dashboard');
+            exit();
+        }
+    }
+
+    /**
+     * Verifica que exista una sesión activa, sin importar el rol.
+     * Si no hay sesión, redirige al login.
+     *
+     * @return void
+     */
+    public static function exigirSesion()
+    {
+        if (!isset($_SESSION['user_id'])) {
+            header('Location: ' . BASE_PATH . '/login');
             exit();
         }
     }

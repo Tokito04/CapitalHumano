@@ -73,8 +73,11 @@ class Database
             $this->conn = new PDO($dsn, $this->username, $this->password);
             $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (PDOException $e) {
-            // En un entorno de producción, sería mejor registrar este error que imprimirlo
-            die('Connection Error: ' . $e->getMessage());
+            // Registramos el detalle técnico en el log del servidor, nunca
+            // en la respuesta al usuario (evita fuga de información interna).
+            error_log('Error de conexión a la base de datos: ' . $e->getMessage());
+            http_response_code(500);
+            die('El servicio no está disponible en este momento. Intente más tarde.');
         }
     }
 

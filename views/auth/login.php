@@ -8,7 +8,11 @@
 </head>
 <body class="auth-page">
     <div class="auth-container">
-        <?php if (isset($_GET['error'])): ?>
+        <?php if (($_GET['error'] ?? '') === 'bloqueado'): ?>
+            <div class="error-message">
+                Cuenta bloqueada temporalmente por demasiados intentos fallidos. Intente de nuevo en unos minutos.
+            </div>
+        <?php elseif (isset($_GET['error'])): ?>
             <div class="error-message">
                 El email o la contraseña son incorrectos.
             </div>
@@ -16,6 +20,7 @@
 
         <h2>Iniciar Sesión</h2>
         <form action="" method="POST">
+            <?= \App\Helpers\CsrfHelper::field() ?>
             <div class="form-group">
                 <label for="email">Email:</label>
                 <input type="email" id="email" name="email" required>

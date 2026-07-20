@@ -41,6 +41,7 @@
                     <p class="card-text">Puedes generar un documento PDF con el resuelto de vacaciones para el colaborador.</p>
 
                     <form action="<?php echo BASE_PATH; ?>/vacaciones/generar" method="POST" target="_blank">
+                        <?= \App\Helpers\CsrfHelper::field() ?>
                         <input type="hidden" name="colaborador_id" value="<?php echo $colaborador['id']; ?>">
                         <input type="hidden" name="dias_vacaciones" value="<?php echo $dias_vacaciones_ganados; ?>">
 

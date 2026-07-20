@@ -1,0 +1,14 @@
+# Esta carpeta solo debe servir contenido estático subido por usuarios.
+# Aunque el UploadHelper ya restringe extensión y tipo MIME, esta capa
+# adicional evita que un archivo malicioso (por ejemplo, vía un bypass
+# futuro de validación) pueda llegar a ejecutarse como PHP.
+
+<IfModule mod_php.c>
+    php_flag engine off
+</IfModule>
+
+<FilesMatch "\.(php|phtml|php3|php4|php5|php7|pht|phar|cgi|pl)$">
+    Require all denied
+</FilesMatch>
+
+Options -Indexes -ExecCGI

@@ -17,21 +17,35 @@ use App\Models\Colaborador;
 class ApiController
 {
     /**
-     * Clave API de ejemplo para la Contraloría
+     * Verifica que la petición esté autorizada: o bien hay una sesión de
+     * usuario activa (uso interno, p.ej. el dashboard), o bien se envía una
+     * API Key válida (consumo externo, p.ej. Contraloría). La clave se lee
+     * de una variable de entorno, nunca queda hardcodeada en el código
+     * fuente, y se compara en tiempo constante con hash_equals().
+     *
+     * @return bool
      */
-    const API_KEY_CONTRALORIA = 'CONT-123-XYZ';
+    private function autorizado(): bool
+    {
+        if (isset($_SESSION['user_id'])) {
+            return true;
+        }
+
+        $apiKeyEsperada = $_ENV['API_KEY_CONTRALORIA'] ?? '';
+        $apiKeyRecibida = $_GET['apikey'] ?? '';
+
+        return $apiKeyEsperada !== '' && hash_equals($apiKeyEsperada, $apiKeyRecibida);
+    }
 
     /**
      * Devuelve las estadísticas de colaboradores por sexo.
-     * Requiere autenticación mediante API Key.
+     * Requiere sesión activa o autenticación mediante API Key.
      *
      * @return void Devuelve respuesta JSON con estadísticas por sexo
      */
     public function estadisticasSexo()
     {
-        // Medida de seguridad simple: verificar una API Key
-        $apiKey = isset($_GET['apikey']) ? $_GET['apikey'] : '';
-        if ($apiKey !== self::API_KEY_CONTRALORIA) {
+        if (!$this->autorizado()) {
             header('Content-Type: application/json');
             http_response_code(401); // Unauthorized
             echo json_encode(['error' => 'API Key no válida o no proporcionada.']);
@@ -112,15 +126,13 @@ class ApiController
 
     /**
      * Devuelve un conjunto completo de estadísticas para los gráficos del dashboard.
-     * Requiere autenticación mediante API Key.
+     * Requiere sesión activa o autenticación mediante API Key.
      *
      * @return void Devuelve respuesta JSON con todas las estadísticas del sistema
      */
     public function estadisticasGenerales()
     {
-        // Reutilizamos la misma clave de API para la seguridad
-        $apiKey = isset($_GET['apikey']) ? $_GET['apikey'] : '';
-        if ($apiKey !== self::API_KEY_CONTRALORIA) {
+        if (!$this->autorizado()) {
             header('Content-Type: application/json');
             http_response_code(401); // Unauthorized
             echo json_encode(['error' => 'API Key no válida o no proporcionada.']);

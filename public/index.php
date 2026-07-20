@@ -1,7 +1,5 @@
 <?php
 
-session_start(); // Iniciamos sesión para usarla en el futuro
-
 // Incluimos el autoloader de Composer
 require_once __DIR__ . '/../vendor/autoload.php';
 
@@ -16,7 +14,36 @@ use App\Controllers\ReporteController;
 use App\Controllers\VacacionesController;
 use App\Controllers\Api\ApiController;
 use App\Helpers\AuthHelper;
+use App\Helpers\CsrfHelper;
 use App\Controllers\ErrorController;
+
+// --- Cabeceras de seguridad HTTP (aplican a toda respuesta) ---
+header('X-Content-Type-Options: nosniff');
+header('X-Frame-Options: DENY');
+header('Referrer-Policy: strict-origin-when-cross-origin');
+header("Content-Security-Policy: default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' https://cdn.jsdelivr.net; object-src 'none'; base-uri 'self'; frame-ancestors 'none'");
+
+// --- Sesión endurecida: cookie httponly/samesite, secure si la conexión es HTTPS ---
+$esHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+    || (($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https');
+
+session_set_cookie_params([
+    'lifetime' => 0,
+    'path' => '/',
+    'domain' => '',
+    'secure' => $esHttps,
+    'httponly' => true,
+    'samesite' => 'Strict',
+]);
+session_start();
+
+// --- Validación CSRF centralizada para toda solicitud que modifique estado ---
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && !CsrfHelper::validar()) {
+    http_response_code(403);
+    echo 'Solicitud inválida o expirada (token CSRF ausente o incorrecto). Recargue la página e intente de nuevo.';
+    exit();
+}
+
 // --- INICIO DEL ROUTER MEJORADO ---
 $base_path = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/');
 define('BASE_PATH', $base_path);
@@ -39,9 +66,8 @@ $method = $_SERVER['REQUEST_METHOD'];
 
 switch ($request_uri) {
     case '/':
-        echo 'Página de Inicio';
         header('Location:'.BASE_PATH. '/dashboard');
-        break;
+        exit();
 
     case '/login':
         $controller = new UsuarioController();
@@ -53,7 +79,7 @@ switch ($request_uri) {
         break;
 
     case '/register':
-    	AuthHelper::verificarPermiso(AuthHelper::ROL_ADMINISTRADOR);
+        AuthHelper::verificarPermiso(AuthHelper::ROL_ADMINISTRADOR);
         $controller = new UsuarioController();
         if ($method === 'GET') {
             $controller->showRegisterForm();
@@ -62,82 +88,62 @@ switch ($request_uri) {
         }
         break;
 
-
-    // ...
     case '/dashboard':
-        // Proteger la ruta: solo accesible si hay una sesión activa
-        if (!isset($_SESSION['user_id'])) {
-            header('Location:'.BASE_PATH. '/login');
-            exit();
-        }
+        AuthHelper::exigirSesion();
         require_once __DIR__ . '/../views/dashboard.php';
         break;
 
     case '/logout':
+        AuthHelper::exigirSesion();
+        $_SESSION = [];
         session_unset();
         session_destroy();
+        setcookie(session_name(), '', time() - 3600, '/');
         header('Location:'.BASE_PATH. '/login');
         exit();
 
     case '/colaboradores':
-        if (!isset($_SESSION['user_id'])) { header('Location: ' . BASE_PATH . '/login'); exit(); }
-
+        AuthHelper::exigirSesion();
         $controller = new ColaboradorController();
         $controller->index();
         break;
 
     case '/colaboradores/crear':
         AuthHelper::verificarPermiso(AuthHelper::ROL_ADMINISTRADOR);
-        if (!isset($_SESSION['user_id'])) { header('Location: ' . BASE_PATH . '/login'); exit(); }
-
         $controller = new ColaboradorController();
         $controller->showCreateForm();
         break;
 
     case '/colaboradores/store':
         AuthHelper::verificarPermiso(AuthHelper::ROL_ADMINISTRADOR);
-        if (!isset($_SESSION['user_id'])) { header('Location: ' . BASE_PATH . '/login'); exit(); }
-
         if ($method === 'POST') {
             $controller = new ColaboradorController();
             $controller->store();
         }
         break;
 
-
     case '/colaboradores/editar':
         AuthHelper::verificarPermiso(AuthHelper::ROL_ADMINISTRADOR);
-        if (!isset($_SESSION['user_id'])) { header('Location: ' . BASE_PATH . '/login'); exit(); }
-
         $controller = new ColaboradorController();
         $controller->showEditForm();
         break;
 
-
     case '/colaboradores/update':
         AuthHelper::verificarPermiso(AuthHelper::ROL_ADMINISTRADOR);
-        if (!isset($_SESSION['user_id'])) { header('Location: ' . BASE_PATH . '/login'); exit(); }
-
         if ($method === 'POST') {
             $controller = new ColaboradorController();
             $controller->update();
         }
         break;
 
-
-
     case '/cargos/crear':
         AuthHelper::verificarPermiso(AuthHelper::ROL_ADMINISTRADOR);
-        if (!isset($_SESSION['user_id'])) { header('Location: ' . BASE_PATH . '/login'); exit(); }
-
         $controller = new CargoController();
         $controller->showCreateForm();
         break;
 
     case '/cargos/store':
         AuthHelper::verificarPermiso(AuthHelper::ROL_ADMINISTRADOR);
-        if (!isset($_SESSION['user_id'])) { header('Location: ' . BASE_PATH . '/login'); exit(); }
-
         if ($method === 'POST') {
             $controller = new CargoController();
             $controller->store();
@@ -145,55 +151,54 @@ switch ($request_uri) {
         break;
 
     case '/reportes/colaboradores':
-        if (!isset($_SESSION['user_id'])) { header('Location: ' . BASE_PATH . '/login'); exit(); }
-
+        AuthHelper::exigirSesion();
         $controller = new ReporteController();
         $controller->colaboradores();
         break;
 
     case '/reportes/colaboradores/exportar':
-        if (!isset($_SESSION['user_id'])) { header('Location: ' . BASE_PATH . '/login'); exit(); }
-
+        AuthHelper::exigirSesion();
         $controller = new ReporteController();
         $controller->exportarColaboradores();
         break;
 
     case '/vacaciones':
-        if (!isset($_SESSION['user_id'])) { header('Location: ' . BASE_PATH . '/login'); exit(); }
+        AuthHelper::exigirSesion();
         $controller = new VacacionesController();
         $controller->index();
         break;
 
     case '/vacaciones/generar':
         AuthHelper::verificarPermiso(AuthHelper::ROL_ADMINISTRADOR);
-        if (!isset($_SESSION['user_id'])) { header('Location: ' . BASE_PATH . '/login'); exit(); }
         $controller = new VacacionesController();
         $controller->generarResuelto();
         break;
 
     case '/usuarios':
         AuthHelper::verificarPermiso(AuthHelper::ROL_ADMINISTRADOR);
-        if (!isset($_SESSION['user_id'])) { header('Location: ' . BASE_PATH . '/login'); exit(); }
         $controller = new UsuarioController();
         $controller->index();
         break;
 
     case '/usuarios/editar':
         AuthHelper::verificarPermiso(AuthHelper::ROL_ADMINISTRADOR);
-        if (!isset($_SESSION['user_id'])) { header('Location: ' . BASE_PATH . '/login'); exit(); }
         $controller = new UsuarioController();
         $controller->showEditForm();
         break;
 
     case '/usuarios/update':
-        if (!isset($_SESSION['user_id'])) { header('Location: ' . BASE_PATH . '/login'); exit(); }
+        // Corregido: esta ruta modifica el rol/estado de cualquier usuario,
+        // por lo tanto requiere rol de administrador (antes solo exigía sesión).
+        AuthHelper::verificarPermiso(AuthHelper::ROL_ADMINISTRADOR);
         if ($method === 'POST') {
             $controller = new UsuarioController();
             $controller->update();
         }
         break;
 
-    // --- RUTA DE LA API ---
+    // --- RUTAS DE LA API ---
+    // Requieren sesión activa (uso interno del dashboard) o una API Key
+    // válida (consumo externo, p.ej. Contraloría). Ver ApiController.
     case '/api/colaboradores/stats/sexo':
         $controller = new ApiController();
         $controller->estadisticasSexo();
@@ -207,12 +212,9 @@ switch ($request_uri) {
     case '/timer':
         header('Location:' . BASE_PATH . '/timer.html');
         exit();
-        break;
 
     default:
         $controller = new ErrorController();
         $controller->notFound();
         break;
-
-
 }

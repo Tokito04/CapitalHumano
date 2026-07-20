@@ -92,7 +92,9 @@ create table if not exists usuarios
     password_hash varchar(255) not null,
     activo        boolean default true,
     rol_id        integer
-    references roles
+    references roles,
+    intentos_fallidos integer not null default 0,
+    bloqueado_hasta   timestamp null
     );
 
 alter table usuarios

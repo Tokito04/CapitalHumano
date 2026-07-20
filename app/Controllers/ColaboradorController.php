@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Models\Colaborador;
 use App\Models\Cargo;
 use App\Utils\Validator;
+use App\Helpers\UploadHelper;
 
 /**
  * Clase ColaboradorController
@@ -130,11 +131,16 @@ class ColaboradorController
 
             // 4. Manejar la subida de la foto
             if (isset($_FILES['foto_perfil']) && $_FILES['foto_perfil']['error'] === UPLOAD_ERR_OK) {
-                $uploadDir = __DIR__ . '/../../public/uploads/fotos/';
-                $fileName = uniqid() . '-' . basename($_FILES['foto_perfil']['name']);
-                $targetFile = $uploadDir . $fileName;
-                if (move_uploaded_file($_FILES['foto_perfil']['tmp_name'], $targetFile)) {
-                    $colaborador->foto_perfil = $fileName;
+                try {
+                    $colaborador->foto_perfil = UploadHelper::guardar(
+                        $_FILES['foto_perfil'],
+                        __DIR__ . '/../../public/uploads/fotos/',
+                        UploadHelper::PERFIL_ALLOWED
+                    );
+                } catch (\RuntimeException $e) {
+                    $_SESSION['errors'] = [$e->getMessage()];
+                    header('Location: ' . BASE_PATH . '/colaboradores/editar?id=' . $_POST['id']);
+                    exit();
                 }
             } else {
                 $datos_actuales = Colaborador::findById($_POST['id']);
@@ -142,12 +148,16 @@ class ColaboradorController
             }
             // Inicio Lógica de Historial Académico
             if (isset($_FILES['historial_academico_pdf']) && $_FILES['historial_academico_pdf']['error'] === UPLOAD_ERR_OK) {
-                $uploadDirPdf = __DIR__ . '/../../public/uploads/pdf/';
-                $fileNamePdf = uniqid() . '-' . basename($_FILES['historial_academico_pdf']['name']);
-                $targetFilePdf = $uploadDirPdf . $fileNamePdf;
-
-                if (move_uploaded_file($_FILES['historial_academico_pdf']['tmp_name'], $targetFilePdf)) {
-                    $colaborador->historial_academico_pdf = $fileNamePdf;
+                try {
+                    $colaborador->historial_academico_pdf = UploadHelper::guardar(
+                        $_FILES['historial_academico_pdf'],
+                        __DIR__ . '/../../public/uploads/pdf/',
+                        UploadHelper::DOCUMENTO_ALLOWED
+                    );
+                } catch (\RuntimeException $e) {
+                    $_SESSION['errors'] = [$e->getMessage()];
+                    header('Location: ' . BASE_PATH . '/colaboradores/editar?id=' . $_POST['id']);
+                    exit();
                 }
             } else {
                 // Si no se sube un nuevo PDF, mantenemos el existente.
@@ -225,30 +235,31 @@ class ColaboradorController
 
             // ---- INICIO LÓGICA DE FOTO ----
             if (isset($_FILES['foto_perfil']) && $_FILES['foto_perfil']['error'] === UPLOAD_ERR_OK) {
-                $uploadDir = __DIR__ . '/../../public/uploads/fotos/';
-                // Crea un nombre único para el archivo para evitar colisiones
-                $fileName = uniqid() . '-' . basename($_FILES['foto_perfil']['name']);
-                $targetFile = $uploadDir . $fileName;
-
-                // Mueve el archivo temporal a la carpeta de destino
-                if (move_uploaded_file($_FILES['foto_perfil']['tmp_name'], $targetFile)) {
-                    $colaborador->foto_perfil = $fileName;
-                } else {
-                    $colaborador->foto_perfil = null; // O manejar el error
+                try {
+                    $colaborador->foto_perfil = UploadHelper::guardar(
+                        $_FILES['foto_perfil'],
+                        __DIR__ . '/../../public/uploads/fotos/',
+                        UploadHelper::PERFIL_ALLOWED
+                    );
+                } catch (\RuntimeException $e) {
+                    $_SESSION['errors'] = [$e->getMessage()];
+                    header('Location: ' . BASE_PATH . '/colaboradores/crear');
+                    exit();
                 }
             }
             if (isset($_FILES['historial_academico_pdf']) && $_FILES['historial_academico_pdf']['error'] === UPLOAD_ERR_OK) {
-                $uploadDirPdf = __DIR__ . '/../../public/uploads/pdf/';
-                $fileNamePdf = uniqid() . '-' . basename($_FILES['historial_academico_pdf']['name']);
-                $targetFilePdf = $uploadDirPdf . $fileNamePdf;
-
-                if (move_uploaded_file($_FILES['historial_academico_pdf']['tmp_name'], $targetFilePdf)) {
-                    $colaborador->historial_academico_pdf = $fileNamePdf;
-                } else{
-                    $colaborador->historial_academico_pdf = null; // O manejar el error
-                }}
+                try {
+                    $colaborador->historial_academico_pdf = UploadHelper::guardar(
+                        $_FILES['historial_academico_pdf'],
+                        __DIR__ . '/../../public/uploads/pdf/',
+                        UploadHelper::DOCUMENTO_ALLOWED
+                    );
+                } catch (\RuntimeException $e) {
+                    $_SESSION['errors'] = [$e->getMessage()];
+                    header('Location: ' . BASE_PATH . '/colaboradores/crear');
+                    exit();
+                }
             }
-
 
             $colaborador->correo_personal = Validator::sanitizeEmail($_POST['correo_personal']);
             $colaborador->telefono = Validator::sanitizeAlphaNumeric($_POST['telefono']);
@@ -264,5 +275,6 @@ class ColaboradorController
                 exit();
             }
         }
+    }
 
 }

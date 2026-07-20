@@ -233,12 +233,15 @@ class Colaborador
             } else {
                 // La consulta se ejecutó sin errores, pero no actualizó ninguna fila.
                 // Esto usualmente significa que el ID no se encontró.
-                die("Depuración: La consulta se ejecutó pero no se actualizó ninguna fila. ¿Es correcto el ID: " . $this->id . "?");
+                error_log("Colaborador::actualizar() no afectó ninguna fila. ID: " . $this->id);
+                return false;
             }
 
         } catch (PDOException $e) {
-            // Si hay cualquier error en el prepare() o execute(), se captura aquí.
-            die("Error de base de datos al actualizar: " . $e->getMessage());
+            // Registramos el detalle técnico en el log; el usuario solo ve
+            // un mensaje genérico (controlado por el controlador que llama).
+            error_log("Error de base de datos al actualizar colaborador: " . $e->getMessage());
+            return false;
         }
     }
 

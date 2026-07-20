@@ -122,6 +122,66 @@ class Usuario
     }
 
     /**
+     * Máximo de intentos fallidos permitidos antes de bloquear la cuenta.
+     */
+    const MAX_INTENTOS_FALLIDOS = 5;
+
+    /**
+     * Minutos que permanece bloqueada la cuenta tras superar el máximo de intentos.
+     */
+    const MINUTOS_BLOQUEO = 5;
+
+    /**
+     * Indica si la cuenta identificada por $email está bloqueada temporalmente
+     * por exceso de intentos fallidos de inicio de sesión.
+     *
+     * @param array $user Registro de usuario (tal como lo devuelve findByEmail)
+     * @return bool
+     */
+    public static function estaBloqueado(array $user): bool
+    {
+        return !empty($user['bloqueado_hasta']) && strtotime($user['bloqueado_hasta']) > time();
+    }
+
+    /**
+     * Registra un intento fallido de login para el usuario indicado.
+     * Si se alcanza el máximo de intentos, bloquea la cuenta temporalmente.
+     *
+     * @param int $id
+     * @return void
+     */
+    public static function registrarIntentoFallido(int $id): void
+    {
+        $db = Database::getInstance()->getConnection();
+        $stmt = $db->prepare(
+            'UPDATE usuarios SET intentos_fallidos = intentos_fallidos + 1,
+                bloqueado_hasta = CASE
+                    WHEN intentos_fallidos + 1 >= :maximo THEN NOW() + (:minutos || \' minutes\')::interval
+                    ELSE bloqueado_hasta
+                END
+             WHERE id = :id'
+        );
+        $stmt->bindValue(':maximo', self::MAX_INTENTOS_FALLIDOS, PDO::PARAM_INT);
+        $stmt->bindValue(':minutos', self::MINUTOS_BLOQUEO, PDO::PARAM_INT);
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+    }
+
+    /**
+     * Resetea el contador de intentos fallidos tras un login exitoso.
+     *
+     * @param int $id
+     * @return void
+     */
+    public static function resetearIntentos(int $id): void
+    {
+        $db = Database::getInstance()->getConnection();
+        $stmt = $db->prepare('UPDATE usuarios SET intentos_fallidos = 0, bloqueado_hasta = NULL WHERE id = :id');
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+    }
+
+    /**
      * Obtiene todos los usuarios administrativos de la base de datos.
      * Incluye información del rol mediante JOIN.
      *

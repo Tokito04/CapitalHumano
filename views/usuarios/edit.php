@@ -24,6 +24,7 @@
         <h2>Editar Usuario: <?php echo htmlspecialchars($usuario['nombre']); ?></h2>
 
         <form action="<?php echo BASE_PATH; ?>/usuarios/update" method="POST">
+            <?= \App\Helpers\CsrfHelper::field() ?>
             <input type="hidden" name="id" value="<?php echo htmlspecialchars($usuario['id']); ?>">
 
             <div class="form-group">

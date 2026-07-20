@@ -76,9 +76,22 @@ class UsuarioController
             // Buscar usuario por email
             $user = Usuario::findByEmail($email);
 
+            // Protección contra fuerza bruta: cuenta bloqueada temporalmente
+            // tras demasiados intentos fallidos consecutivos.
+            if ($user && Usuario::estaBloqueado($user)) {
+                header('Location:'.BASE_PATH. '/login?error=bloqueado');
+                exit();
+            }
+
             // Verificar si el usuario existe y si la contraseña es correcta
             // Esto cumple el requisito de "Implementar hash en las credenciales"
             if ($user && password_verify($password, $user['password_hash']) && $user['activo']) {
+
+                Usuario::resetearIntentos($user['id']);
+
+                // Regeneramos el ID de sesión al autenticar para evitar
+                // ataques de fijación de sesión (session fixation).
+                session_regenerate_id(true);
 
                 // Iniciar sesión y guardar datos del usuario
                 $_SESSION['user_id'] = $user['id'];
@@ -88,6 +101,9 @@ class UsuarioController
                 // Redirigir a una página de bienvenida o dashboard
                 header('Location:'.BASE_PATH. '/dashboard');
             } else {
+                if ($user) {
+                    Usuario::registrarIntentoFallido($user['id']);
+                }
                 // Si las credenciales son incorrectas, redirigir de vuelta al login con un error
                 header('Location:'.BASE_PATH. '/login?error=1');
             }

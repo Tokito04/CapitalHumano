@@ -10,6 +10,7 @@
     <div class="auth-container">
         <h2>Registrar Nuevo Usuario</h2>
         <form method="POST">
+            <?= \App\Helpers\CsrfHelper::field() ?>
             <div class="form-group">
                 <label for="nombre">Nombre:</label>
                 <input type="text" id="nombre" name="nombre" required>

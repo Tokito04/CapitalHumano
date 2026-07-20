@@ -24,6 +24,7 @@
         <h2>Añadir Nuevo Cargo para: <?php echo htmlspecialchars($colaborador['primer_nombre'] . ' ' . $colaborador['primer_apellido']); ?></h2>
 
         <form action="<?php echo BASE_PATH; ?>/cargos/store" method="POST">
+            <?= \App\Helpers\CsrfHelper::field() ?>
             <input type="hidden" name="colaborador_id" value="<?php echo htmlspecialchars($colaborador['id']); ?>">
 
             <div class="form-group">

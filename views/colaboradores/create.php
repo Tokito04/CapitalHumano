@@ -35,6 +35,7 @@
 
         <h2>Registrar Nuevo Colaborador</h2>
         <form action="<?php echo BASE_PATH; ?>/colaboradores/store" method="POST" enctype="multipart/form-data">
+            <?= \App\Helpers\CsrfHelper::field() ?>
             <div class="form-grid">
                 <div class="form-group">
                     <label for="primer_nombre">Primer Nombre:</label>

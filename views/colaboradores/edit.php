@@ -25,6 +25,7 @@
         <a href="<?php echo BASE_PATH; ?>/cargos/crear?colaborador_id=<?php echo $colaborador['id']; ?>" class="btn btn-success" style="margin-bottom: 20px;">Añadir Nuevo Cargo/Movimiento</a>
 
         <form action="<?php echo BASE_PATH; ?>/colaboradores/update" method="POST" enctype="multipart/form-data">
+            <?= \App\Helpers\CsrfHelper::field() ?>
             <input type="hidden" name="id" value="<?php echo htmlspecialchars($colaborador['id']); ?>">
 
             <div class="form-grid">
